@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icon">
+    <file>icons/phone-28-32.ico</file>
+    <file>icons/briefcase-11-32.ico</file>
     <file>icons/pi-sign-48.ico</file>
     <file>icons/account-logout-32.ico</file>
     <file>icons/activity-feed-32 (1).ico</file>
