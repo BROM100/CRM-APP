@@ -10,6 +10,12 @@
     <height>843</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>1024</width>
@@ -441,7 +447,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/home-4-32.ico</normaloff>
-               <normalon>:/icon/icons/home-4-32.ico</normalon>:/icon/icons/home-4-32.ico</iconset>
+               <normalon>:/icon/icons/home-4-48.ico</normalon>:/icon/icons/home-4-32.ico</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -465,7 +471,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/dashboard-2-32.ico</normaloff>
-               <normalon>:/icon/icons/dashboard-2-32.ico</normalon>:/icon/icons/dashboard-2-32.ico</iconset>
+               <normalon>:/icon/icons/dashboard-2-48.ico</normalon>:/icon/icons/dashboard-2-32.ico</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -489,7 +495,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/activity-feed-32 (1).ico</normaloff>
-               <normalon>:/icon/icons/activity-feed-32 (1).ico</normalon>:/icon/icons/activity-feed-32 (1).ico</iconset>
+               <normalon>:/icon/icons/activity-feed-48.ico</normalon>:/icon/icons/activity-feed-32 (1).ico</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -513,7 +519,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/product-32.ico</normaloff>
-               <normalon>:/icon/icons/product-32.ico</normalon>:/icon/icons/product-32.ico</iconset>
+               <normalon>:/icon/icons/product-48.ico</normalon>:/icon/icons/product-32.ico</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -537,7 +543,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/group-32.ico</normaloff>
-               <normalon>:/icon/icons/group-32.ico</normalon>:/icon/icons/group-32.ico</iconset>
+               <normalon>:/icon/icons/group-48.ico</normalon>:/icon/icons/group-32.ico</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -561,7 +567,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/phone-28-32.ico</normaloff>
-               <normalon>:/icon/icons/phone-28-32.ico</normalon>:/icon/icons/phone-28-32.ico</iconset>
+               <normalon>:/icon/icons/phone-28-48.ico</normalon>:/icon/icons/phone-28-32.ico</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -585,7 +591,7 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/icon/icons/briefcase-11-32.ico</normaloff>
-               <normalon>:/icon/icons/briefcase-11-32.ico</normalon>:/icon/icons/briefcase-11-32.ico</iconset>
+               <normalon>:/icon/icons/briefcase-11-48.ico</normalon>:/icon/icons/briefcase-11-32.ico</iconset>
              </property>
              <property name="iconSize">
               <size>
