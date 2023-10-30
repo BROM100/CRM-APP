@@ -100,12 +100,13 @@
             </property>
             <property name="icon">
              <iconset resource="resource.qrc">
-              <normaloff>:/icon/icons/menu-4-32.ico</normaloff>:/icon/icons/menu-4-32.ico</iconset>
+              <normaloff>:/icon/icons/menu-4-32.ico</normaloff>
+              <normalon>:/icon/icons/menu-4-48.ico</normalon>:/icon/icons/menu-4-32.ico</iconset>
             </property>
             <property name="iconSize">
              <size>
-              <width>14</width>
-              <height>14</height>
+              <width>18</width>
+              <height>18</height>
              </size>
             </property>
             <property name="checkable">
@@ -168,7 +169,17 @@
             </property>
             <property name="icon">
              <iconset resource="resource.qrc">
-              <normaloff>:/icon/icons/group-32.ico</normaloff>:/icon/icons/group-32.ico</iconset>
+              <normaloff>:/icon/icons/user-32.ico</normaloff>
+              <normalon>:/icon/icons/user-48.ico</normalon>:/icon/icons/user-32.ico</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>18</width>
+              <height>18</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -684,7 +695,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Sidebar</string>
+              <string>MENU</string>
              </property>
             </widget>
            </item>

@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icon">
+    <file>icons/user-48.ico</file>
+    <file>icons/menu-4-48.ico</file>
     <file>icons/activity-feed-48.ico</file>
     <file>icons/briefcase-11-48.ico</file>
     <file>icons/dashboard-2-48.ico</file>
