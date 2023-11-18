@@ -1,7 +1,8 @@
+import sqlite3
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem
 from PyQt6.QtCore import pyqtSlot, QFile, QTextStream
-
+import sqlite3
 import resource_rc
 
 
@@ -12,12 +13,33 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+        # Connect to SQLite database
+        self.connection = sqlite3.connect("./database/crm.db")
+        self.cursor = self.connection.cursor()
+
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
+
+    def loaddata(self):
+        # Clear existing items in the table
+        self.ui.tableWidget.setRowCount(0)
+
+        # Execute SQL query to fetch data from the "users" table
+        query = "SELECT ID, Login, Password FROM Users"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+
+        # Populate data into the QTableWidget
+        for row_number, row_data in enumerate(data):
+            self.ui.tableWidget.insertRow(row_number)
+            for column_number, column_data in enumerate(row_data):
+                item = QTableWidgetItem(str(column_data))
+                self.ui.tableWidget.setItem(row_number, column_number, item)
 
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -63,6 +85,9 @@ class MainWindow(QMainWindow):
 
     def on_user_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(1)
+        self.loaddata()
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -219,24 +219,22 @@
          <widget class="QWidget" name="page_8">
           <layout class="QGridLayout" name="gridLayout_16">
            <item row="0" column="0">
-            <widget class="QLabel" name="label_14">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>341</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>32</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Users Page</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
+            <widget class="QTableWidget" name="tableWidget">
+             <column>
+              <property name="text">
+               <string>Id</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Login</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Password</string>
+              </property>
+             </column>
             </widget>
            </item>
           </layout>
