@@ -1,21 +1,33 @@
 import sqlite3
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem, QTableWidget
 from PyQt6.QtCore import pyqtSlot, QFile, QTextStream
 import sqlite3
 import resource_rc
-
-
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, create_engine
+from sqlalchemy.orm import relationship, backref, sessionmaker,declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
+import models.users
+from Managers import users_class_manager
 from mainwindow import Ui_MainWindow
+
+#Base = declarative_base()
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+
         # Connect to SQLite database
-        self.connection = sqlite3.connect("./database/crm.db")
-        self.cursor = self.connection.cursor()
+        # self.connection = sqlite3.connect("./database/crm.db")
+        # self.cursor = self.connection.cursor()
+        ##########################################
+        self.engine = create_engine(f"sqlite:///database/crm.db")
+        Session = sessionmaker()
+        Session.configure(bind=self.engine)
+        self.session = Session()
+        ###########################################
 
 
         self.ui = Ui_MainWindow()
@@ -24,22 +36,23 @@ class MainWindow(QMainWindow):
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
+        ##########################################
+        self.users_table_widget = users_class_manager.User_Manager(self.ui, self.session)
+        self.users_table_widget.load_data()
 
-    def loaddata(self):
-        # Clear existing items in the table
-        self.ui.tableWidget.setRowCount(0)
+
 
         # Execute SQL query to fetch data from the "users" table
-        query = "SELECT ID, Login, Password FROM Users"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
+        # query = "SELECT ID, Login, Password FROM Users"
+        # self.cursor.execute(query)
+        # data = self.cursor.fetchall()
 
         # Populate data into the QTableWidget
-        for row_number, row_data in enumerate(data):
-            self.ui.tableWidget.insertRow(row_number)
-            for column_number, column_data in enumerate(row_data):
-                item = QTableWidgetItem(str(column_data))
-                self.ui.tableWidget.setItem(row_number, column_number, item)
+        # for row_number, row_data in enumerate(data):
+        #     self.ui.tableWidget.insertRow(row_number)
+        #     for column_number, column_data in enumerate(row_data):
+        #         item = QTableWidgetItem(str(column_data))
+        #         self.ui.tableWidget.setItem(row_number, column_number, item)
 
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -85,7 +98,17 @@ class MainWindow(QMainWindow):
 
     def on_user_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(1)
-        self.loaddata()
+        self.users_table_widget.ui = self.ui
+        self.users_table_widget.set_column_width(300)
+
+
+
+
+
+
+
+
+
 
 
 
