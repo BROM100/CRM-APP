@@ -1,6 +1,6 @@
 import sqlite3
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem, QTableWidget
+from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem, QTableWidget, QMessageBox
 from PyQt6.QtCore import pyqtSlot, QFile, QTextStream
 import sqlite3
 import resource_rc
@@ -53,7 +53,12 @@ class MainWindow(QMainWindow):
         #     for column_number, column_data in enumerate(row_data):
         #         item = QTableWidgetItem(str(column_data))
         #         self.ui.tableWidget.setItem(row_number, column_number, item)
-
+    def on_add_user_clicked(self):
+        self.users_table_widget.add_new_row()
+    def on_save_user_clicked(self):
+        self.users_table_widget.save_data()
+    def on_delete_user_clicked(self):
+        self.users_table_widget.delete_data()
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 

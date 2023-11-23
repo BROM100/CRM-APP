@@ -217,9 +217,18 @@
           </layout>
          </widget>
          <widget class="QWidget" name="page_8">
-          <layout class="QGridLayout" name="gridLayout_16">
+          <layout class="QGridLayout" name="gridLayout_9">
            <item row="0" column="0">
             <widget class="QTableWidget" name="users_tableWidget">
+             <attribute name="verticalHeaderMinimumSectionSize">
+              <number>100</number>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>100</number>
+             </attribute>
+             <attribute name="verticalHeaderHighlightSections">
+              <bool>true</bool>
+             </attribute>
              <column>
               <property name="text">
                <string>Id</string>
@@ -236,6 +245,49 @@
               </property>
              </column>
             </widget>
+           </item>
+           <item row="1" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QPushButton" name="save_user">
+               <property name="text">
+                <string>save</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="add_user">
+               <property name="text">
+                <string>Add User</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="delete_user">
+               <property name="text">
+                <string>delete</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="autoExclusive">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
