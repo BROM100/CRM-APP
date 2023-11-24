@@ -1,15 +1,11 @@
-import sqlite3
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem, QTableWidget, QMessageBox
-from PyQt6.QtCore import pyqtSlot, QFile, QTextStream
-import sqlite3
-import resource_rc
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, create_engine
-from sqlalchemy.orm import relationship, backref, sessionmaker,declarative_base
+from PyQt6.QtWidgets import QMainWindow, QApplication
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
-import models.users
-from Managers import users_class_manager
+from managers import users_class_manager
 from mainwindow import Ui_MainWindow
+from resources import resource_rc
 
 #Base = declarative_base()
 
@@ -20,9 +16,6 @@ class MainWindow(QMainWindow):
 
 
         # Connect to SQLite database
-        # self.connection = sqlite3.connect("./database/crm.db")
-        # self.cursor = self.connection.cursor()
-        ##########################################
         self.engine = create_engine(f"sqlite:///database/crm.db")
         Session = sessionmaker()
         Session.configure(bind=self.engine)
@@ -36,10 +29,10 @@ class MainWindow(QMainWindow):
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
-        ##########################################
+
+
         self.users_table_widget = users_class_manager.User_Manager(self.ui, self.session)
         self.users_table_widget.load_data()
-
 
 
         # Execute SQL query to fetch data from the "users" table
@@ -53,11 +46,15 @@ class MainWindow(QMainWindow):
         #     for column_number, column_data in enumerate(row_data):
         #         item = QTableWidgetItem(str(column_data))
         #         self.ui.tableWidget.setItem(row_number, column_number, item)
-    def on_add_user_clicked(self):
+
+
+    #Buttons actions
+    def on_add_user_pressed(self):
         self.users_table_widget.add_new_row()
-    def on_save_user_clicked(self):
+
+    def on_save_user_pressed(self):
         self.users_table_widget.save_data()
-    def on_delete_user_clicked(self):
+    def on_delete_user_pressed(self):
         self.users_table_widget.delete_data()
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -104,23 +101,16 @@ class MainWindow(QMainWindow):
     def on_user_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(1)
         self.users_table_widget.ui = self.ui
-        self.users_table_widget.set_column_width(300)
-
-
-
-
-
-
-
-
-
-
+        self.users_table_widget.set_row_height(1)
+        self.users_table_widget.set_column_width(0,35)
+        for c in range(1,self.users_table_widget.columnCount()):
+            self.users_table_widget.set_column_width(c, 130)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    with open("style.qss", "r") as style_file:
+    with open("./src/style.qss", "r") as style_file:
         style_str = style_file.read()
     app.setStyleSheet(style_str)
     window = MainWindow()

@@ -99,7 +99,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="resource.qrc">
+             <iconset resource="../resources/resource.qrc">
               <normaloff>:/icon/icons/menu-4-32.ico</normaloff>
               <normalon>:/icon/icons/menu-4-48.ico</normalon>:/icon/icons/menu-4-32.ico</iconset>
             </property>
@@ -142,7 +142,7 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="resource.qrc">
+               <iconset resource="../resources/resource.qrc">
                 <normaloff>:/icon/icons/search-9-32.ico</normaloff>:/icon/icons/search-9-32.ico</iconset>
               </property>
              </widget>
@@ -168,7 +168,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="resource.qrc">
+             <iconset resource="../resources/resource.qrc">
               <normaloff>:/icon/icons/user-32.ico</normaloff>
               <normalon>:/icon/icons/user-48.ico</normalon>:/icon/icons/user-32.ico</iconset>
             </property>
@@ -220,6 +220,18 @@
           <layout class="QGridLayout" name="gridLayout_9">
            <item row="0" column="0">
             <widget class="QTableWidget" name="users_tableWidget">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="cursor" stdset="0">
+              <cursorShape>SizeAllCursor</cursorShape>
+             </property>
+             <property name="contextMenuPolicy">
+              <enum>Qt::ActionsContextMenu</enum>
+             </property>
              <attribute name="verticalHeaderMinimumSectionSize">
               <number>100</number>
              </attribute>
@@ -242,6 +254,26 @@
              <column>
               <property name="text">
                <string>Password</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>First Name</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Last Name</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Email</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Type</string>
               </property>
              </column>
             </widget>
@@ -477,7 +509,7 @@
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap resource="resource.qrc">:/icon/icons/pi-sign-48.ico</pixmap>
+              <pixmap resource="../resources/resource.qrc">:/icon/icons/pi-sign-48.ico</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
@@ -506,7 +538,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/home-4-32.ico</normaloff>
                <normalon>:/icon/icons/home-4-48.ico</normalon>:/icon/icons/home-4-32.ico</iconset>
              </property>
@@ -530,7 +562,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/dashboard-2-32.ico</normaloff>
                <normalon>:/icon/icons/dashboard-2-48.ico</normalon>:/icon/icons/dashboard-2-32.ico</iconset>
              </property>
@@ -554,7 +586,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/activity-feed-32 (1).ico</normaloff>
                <normalon>:/icon/icons/activity-feed-48.ico</normalon>:/icon/icons/activity-feed-32 (1).ico</iconset>
              </property>
@@ -578,7 +610,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/product-32.ico</normaloff>
                <normalon>:/icon/icons/product-48.ico</normalon>:/icon/icons/product-32.ico</iconset>
              </property>
@@ -602,7 +634,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/group-32.ico</normaloff>
                <normalon>:/icon/icons/group-48.ico</normalon>:/icon/icons/group-32.ico</iconset>
              </property>
@@ -626,7 +658,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/phone-28-32.ico</normaloff>
                <normalon>:/icon/icons/phone-28-48.ico</normalon>:/icon/icons/phone-28-32.ico</iconset>
              </property>
@@ -650,7 +682,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/briefcase-11-32.ico</normaloff>
                <normalon>:/icon/icons/briefcase-11-48.ico</normalon>:/icon/icons/briefcase-11-32.ico</iconset>
              </property>
@@ -691,7 +723,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="resource.qrc">
+          <iconset resource="../resources/resource.qrc">
            <normaloff>:/icon/icons/close-window-32.ico</normaloff>:/icon/icons/close-window-32.ico</iconset>
          </property>
          <property name="iconSize">
@@ -730,7 +762,7 @@
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap resource="resource.qrc">:/icon/icons/pi-sign-48.ico</pixmap>
+              <pixmap resource="../resources/resource.qrc">:/icon/icons/pi-sign-48.ico</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
@@ -764,7 +796,7 @@
               <string>Home</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/home-4-32.ico</normaloff>
                <normalon>:/icon/icons/home-4-32.ico</normalon>:/icon/icons/home-4-32.ico</iconset>
              </property>
@@ -793,7 +825,7 @@
               <string>Dashboard</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/dashboard-2-32.ico</normaloff>
                <normalon>:/icon/icons/dashboard-2-32.ico</normalon>:/icon/icons/dashboard-2-32.ico</iconset>
              </property>
@@ -822,7 +854,7 @@
               <string>Orders</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/activity-feed-32 (1).ico</normaloff>
                <normalon>:/icon/icons/activity-feed-32 (1).ico</normalon>:/icon/icons/activity-feed-32 (1).ico</iconset>
              </property>
@@ -851,7 +883,7 @@
               <string>Products</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/product-32.ico</normaloff>
                <normalon>:/icon/icons/product-32.ico</normalon>:/icon/icons/product-32.ico</iconset>
              </property>
@@ -880,7 +912,7 @@
               <string>Customers</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/group-32.ico</normaloff>
                <normalon>:/icon/icons/group-32.ico</normalon>:/icon/icons/group-32.ico</iconset>
              </property>
@@ -909,7 +941,7 @@
               <string>Contacts</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/phone-28-32.ico</normaloff>
                <normalon>:/icon/icons/phone-28-32.ico</normalon>:/icon/icons/phone-28-32.ico</iconset>
              </property>
@@ -938,7 +970,7 @@
               <string>Leads</string>
              </property>
              <property name="icon">
-              <iconset resource="resource.qrc">
+              <iconset resource="../resources/resource.qrc">
                <normaloff>:/icon/icons/briefcase-11-32.ico</normaloff>
                <normalon>:/icon/icons/briefcase-11-32.ico</normalon>:/icon/icons/briefcase-11-32.ico</iconset>
              </property>
@@ -979,7 +1011,7 @@
           <string>Exit</string>
          </property>
          <property name="icon">
-          <iconset resource="resource.qrc">
+          <iconset resource="../resources/resource.qrc">
            <normaloff>:/icon/icons/close-window-32.ico</normaloff>:/icon/icons/close-window-32.ico</iconset>
          </property>
          <property name="iconSize">
@@ -1041,7 +1073,8 @@
   </widget>
  </widget>
  <resources>
-  <include location="resource.qrc"/>
+  <include location="../resources/resource.qrc"/>
+  <include location="../resources/resource.qrc"/>
  </resources>
  <connections>
   <connection>

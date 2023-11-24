@@ -11,5 +11,9 @@ class Users(Base):
     ID = Column(Integer, primary_key=True)
     Login = Column(String)
     Password = Column(String)
+    First_Name = Column(String)
+    Last_Name = Column(String)
+    Email = Column(String)
+    Type = Column(String)
 
 

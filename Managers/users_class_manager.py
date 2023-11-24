@@ -1,11 +1,5 @@
-import sqlite3
-import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QPushButton, QTableWidgetItem, QTableWidget,QMessageBox,QHeaderView,QLineEdit, QDialog, QVBoxLayout, QLabel
-from PyQt6.QtCore import pyqtSlot, QFile, QTextStream, QItemSelection,Qt
-import sqlite3
-import resource_rc
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, create_engine
-from sqlalchemy.orm import relationship, backref, sessionmaker,declarative_base
+from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel
+from PyQt6.QtCore import Qt
 # from sqlalchemy.ext.declarative import declarative_base
 import models.users
 
@@ -41,10 +35,10 @@ class User_Manager(QTableWidget):
         super(User_Manager, self).__init__()
         self.ui = ui
         self.database_session = session
-        # self.setVerticalHeaderLabels(list("ABCD"))
-        # self.ui.users_tableWidget.itemChanged.connect(self.save_changes)
+
 
     def add_new_row(self):
+        print("Signal emitted: add_new_row")
         # Create an instance of the dialog for adding a new user
         dialog = UserAddDialog()
 
@@ -56,27 +50,30 @@ class User_Manager(QTableWidget):
             login = dialog.login_edit.text()
             password = dialog.password_edit.text()
 
-            # Generate a new user ID (you may adjust this logic as needed)
-            new_user_id = self.generate_new_user_id()
+            #Check if the login and password are not empty
+            if login and password and len(password)>= 8:
 
-            # Add the new row to the table
-            row_position = self.ui.users_tableWidget.rowCount()
-            self.ui.users_tableWidget.insertRow(row_position)
+                # Generate a new user ID
+                new_user_id = self.generate_new_user_id()
 
-            # Set the new items for the added row
-            self.ui.users_tableWidget.setItem(row_position, 0, QTableWidgetItem(str(new_user_id)))
-            self.ui.users_tableWidget.setItem(row_position, 1, QTableWidgetItem(login))
-            self.ui.users_tableWidget.setItem(row_position, 2, QTableWidgetItem(password))
+                # Add the new row to the table
+                row_position = self.ui.users_tableWidget.rowCount()
+                self.ui.users_tableWidget.insertRow(row_position)
 
-            # Update the database with the new user
-            new_user = models.users.Users(ID=new_user_id, Login=login, Password=password)
-            self.database_session.add(new_user)
-            self.database_session.commit()
+                # Set the new items for the added row
+                self.ui.users_tableWidget.setItem(row_position, 0, QTableWidgetItem(str(new_user_id)))
+                self.ui.users_tableWidget.setItem(row_position, 1, QTableWidgetItem(login))
+                self.ui.users_tableWidget.setItem(row_position, 2, QTableWidgetItem(password))
 
+                # Update the database with the new user
+                new_user = models.users.Users(ID=new_user_id, Login=login, Password=password)
+                self.database_session.add(new_user)
+                self.database_session.commit()
+            else:
+                QMessageBox.information(self, "Error", "Login and password (8 characters long) cannot be empty.")
+                self.add_new_row()
     def generate_new_user_id(self):
-        # You need to implement a logic to generate a new user ID
-        # This could involve querying the database for the maximum ID and incrementing it
-        # Here is a simple example assuming IDs are integers
+
         existing_user_ids = [int(self.ui.users_tableWidget.item(row, 0).text()) for row in
                              range(self.ui.users_tableWidget.rowCount())]
         if existing_user_ids:
@@ -93,19 +90,26 @@ class User_Manager(QTableWidget):
             if rows == 0:
                 return
 
-            # Assuming your User class has attributes ID, Login, Password
+
             for row in range(rows):
                 user_id = int(self.ui.users_tableWidget.item(row, 0).text())
                 login = self.ui.users_tableWidget.item(row, 1).text()
                 password = self.ui.users_tableWidget.item(row, 2).text()
-
+                first_name = self.ui.users_tableWidget.item(row, 3).text()
+                last_name = self.ui.users_tableWidget.item(row, 4).text()
+                email = self.ui.users_tableWidget.item(row, 5).text()
+                type = self.ui.users_tableWidget.item(row, 6).text()
                 # Update or insert the user data into the database
                 user = self.database_session.query(models.users.Users).filter_by(ID=user_id).first()
                 if user:
                     user.Login = login
                     user.Password = password
+                    user.First_Name = first_name
+                    user.Last_Name = last_name
+                    user.Email = email
+                    user.Type = type
                 else:
-                    new_user = models.users.Users(ID=user_id, Login=login, Password=password)
+                    new_user = models.users.Users(ID=user_id, Login=login, Password=password, First_Name=first_name, Last_Name=last_name, Email=email,Type=type)
                     self.database_session.add(new_user)
 
             self.database_session.commit()
@@ -162,11 +166,11 @@ class User_Manager(QTableWidget):
     #             print(f"Error committing changes: {e}")
 
 
-
-    def set_column_width(self, width):
-        # Set the width of each column to the specified value
-        for column in range(self.ui.users_tableWidget.columnCount()):
-            self.ui.users_tableWidget.setColumnWidth(column, width)
+    def set_row_height(self, h):
+        for row in range(self.ui.users_tableWidget.rowCount()):
+            self.ui.users_tableWidget.setRowHeight(row, h)
+    def set_column_width(self, column, width):
+        self.ui.users_tableWidget.setColumnWidth(column, width)
 
     def load_data(self):
         self.ui.users_tableWidget.setRowCount(0)
@@ -185,6 +189,10 @@ class User_Manager(QTableWidget):
             self.ui.users_tableWidget.setItem(index, 0, QTableWidgetItem(str(user.ID)))
             self.ui.users_tableWidget.setItem(index, 1, QTableWidgetItem(str(user.Login)))
             self.ui.users_tableWidget.setItem(index, 2, QTableWidgetItem(str(user.Password)))
+            self.ui.users_tableWidget.setItem(index, 3, QTableWidgetItem(str(user.First_Name)))
+            self.ui.users_tableWidget.setItem(index, 4, QTableWidgetItem(str(user.Last_Name)))
+            self.ui.users_tableWidget.setItem(index, 5, QTableWidgetItem(str(user.Email)))
+            self.ui.users_tableWidget.setItem(index, 6, QTableWidgetItem(str(user.Type)))
 
             # Add a checkbox to the vertical header
             checkbox_item = QTableWidgetItem()
@@ -196,6 +204,6 @@ class User_Manager(QTableWidget):
 
         # Set the vertical header to show checkboxes
         self.ui.users_tableWidget.verticalHeader().setSectionsClickable(True)
-        self.ui.users_tableWidget.verticalHeader().setDefaultSectionSize(50)
-        self.ui.users_tableWidget.verticalHeader().setMinimumSectionSize(50)
+        # self.ui.users_tableWidget.verticalHeader().setDefaultSectionSize(50)
+        # self.ui.users_tableWidget.verticalHeader().setMinimumSectionSize(50)
 
