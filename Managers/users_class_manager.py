@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget
+from PyQt6.QtCore import Qt, QSortFilterProxyModel
+from PyQt6.QtGui import QIcon
 # from sqlalchemy.ext.declarative import declarative_base
 import models.users
 
@@ -14,6 +15,18 @@ class UserAddDialog(QDialog):
         self.password_label = QLabel("Password:")
         self.password_edit = QLineEdit()
 
+        self.first_name_label = QLabel("First Name")
+        self.first_name_edit = QLineEdit()
+
+        self.last_name_label = QLabel("Last Name")
+        self.last_name_edit = QLineEdit()
+
+        self.email_label = QLabel("Email")
+        self.email_edit = QLineEdit()
+
+        self.type_label = QLabel("Type")
+        self.type_edit = QLineEdit()
+
         self.save_button = QPushButton("Save")
         self.cancel_button = QPushButton("Cancel")
 
@@ -22,8 +35,17 @@ class UserAddDialog(QDialog):
         self.layout.addWidget(self.login_edit)
         self.layout.addWidget(self.password_label)
         self.layout.addWidget(self.password_edit)
+        self.layout.addWidget(self.first_name_label)
+        self.layout.addWidget(self.first_name_edit)
+        self.layout.addWidget(self.last_name_label)
+        self.layout.addWidget(self.last_name_edit)
+        self.layout.addWidget(self.email_label)
+        self.layout.addWidget(self.email_edit)
+        self.layout.addWidget(self.type_label)
+        self.layout.addWidget(self.type_edit)
         self.layout.addWidget(self.save_button)
         self.layout.addWidget(self.cancel_button)
+
 
         self.save_button.clicked.connect(self.accept)
         self.cancel_button.clicked.connect(self.reject)
@@ -31,9 +53,9 @@ class UserAddDialog(QDialog):
         self.setLayout(self.layout)
 class User_Manager(QTableWidget):
 
-    def __init__(self, ui, session):
+    def __init__(self, users_table_widget, session):
         super(User_Manager, self).__init__()
-        self.ui = ui
+        self.users_table_widget = users_table_widget
         self.database_session = session
 
 
@@ -49,7 +71,10 @@ class User_Manager(QTableWidget):
             # If the user clicked OK, retrieve the entered data
             login = dialog.login_edit.text()
             password = dialog.password_edit.text()
-
+            firstname = dialog.first_name_edit.text()
+            lastname = dialog.last_name_edit.text()
+            email = dialog.email_edit.text()
+            type = dialog.type_edit.text()
             #Check if the login and password are not empty
             if login and password and len(password)>= 8:
 
@@ -57,16 +82,19 @@ class User_Manager(QTableWidget):
                 new_user_id = self.generate_new_user_id()
 
                 # Add the new row to the table
-                row_position = self.ui.users_tableWidget.rowCount()
-                self.ui.users_tableWidget.insertRow(row_position)
+                row_position = self.users_table_widget.rowCount()
+                self.users_table_widget.insertRow(row_position)
 
                 # Set the new items for the added row
-                self.ui.users_tableWidget.setItem(row_position, 0, QTableWidgetItem(str(new_user_id)))
-                self.ui.users_tableWidget.setItem(row_position, 1, QTableWidgetItem(login))
-                self.ui.users_tableWidget.setItem(row_position, 2, QTableWidgetItem(password))
-
+                self.users_table_widget.setItem(row_position, 0, QTableWidgetItem(str(new_user_id)))
+                self.users_table_widget.setItem(row_position, 1, QTableWidgetItem(login))
+                self.users_table_widget.setItem(row_position, 2, QTableWidgetItem(password))
+                self.users_table_widget.setItem(row_position, 3, QTableWidgetItem(firstname))
+                self.users_table_widget.setItem(row_position, 4, QTableWidgetItem(lastname))
+                self.users_table_widget.setItem(row_position, 5, QTableWidgetItem(email))
+                self.users_table_widget.setItem(row_position, 6, QTableWidgetItem(type))
                 # Update the database with the new user
-                new_user = models.users.Users(ID=new_user_id, Login=login, Password=password)
+                new_user = models.users.Users(ID=new_user_id, Login=login, Password=password, First_Name=firstname, Last_Name=lastname, Email=email, Type=type)
                 self.database_session.add(new_user)
                 self.database_session.commit()
             else:
@@ -74,8 +102,8 @@ class User_Manager(QTableWidget):
                 self.add_new_row()
     def generate_new_user_id(self):
 
-        existing_user_ids = [int(self.ui.users_tableWidget.item(row, 0).text()) for row in
-                             range(self.ui.users_tableWidget.rowCount())]
+        existing_user_ids = [int(self.users_table_widget.item(row, 0).text()) for row in
+                             range(self.users_table_widget.rowCount())]
         if existing_user_ids:
             new_user_id = max(existing_user_ids) + 1
         else:
@@ -86,19 +114,19 @@ class User_Manager(QTableWidget):
     def save_data(self):
 
         try:
-            rows = self.ui.users_tableWidget.rowCount()
+            rows = self.users_table_widget.rowCount()
             if rows == 0:
                 return
 
 
             for row in range(rows):
-                user_id = int(self.ui.users_tableWidget.item(row, 0).text())
-                login = self.ui.users_tableWidget.item(row, 1).text()
-                password = self.ui.users_tableWidget.item(row, 2).text()
-                first_name = self.ui.users_tableWidget.item(row, 3).text()
-                last_name = self.ui.users_tableWidget.item(row, 4).text()
-                email = self.ui.users_tableWidget.item(row, 5).text()
-                type = self.ui.users_tableWidget.item(row, 6).text()
+                user_id = int(self.users_table_widget.item(row, 0).text())
+                login = self.users_table_widget.item(row, 1).text()
+                password = self.users_table_widget.item(row, 2).text()
+                first_name = self.users_table_widget.item(row, 3).text()
+                last_name = self.users_table_widget.item(row, 4).text()
+                email = self.users_table_widget.item(row, 5).text()
+                type = self.users_table_widget.item(row, 6).text()
                 # Update or insert the user data into the database
                 user = self.database_session.query(models.users.Users).filter_by(ID=user_id).first()
                 if user:
@@ -118,7 +146,7 @@ class User_Manager(QTableWidget):
             print(f"Error in save_data: {e}")
 
     def delete_data(self):
-        selected_rows = self.ui.users_tableWidget.selectionModel().selectedRows()
+        selected_rows = self.users_table_widget.selectionModel().selectedRows()
         if not selected_rows:
             return
 
@@ -128,7 +156,7 @@ class User_Manager(QTableWidget):
             return
 
         for selected_row in selected_rows:
-            user_id = int(self.ui.users_tableWidget.item(selected_row.row(), 0).text())
+            user_id = int(self.users_table_widget.item(selected_row.row(), 0).text())
             user = self.database_session.query(models.users.Users).filter_by(ID=user_id).first()
             if user:
                 self.database_session.delete(user)
@@ -137,73 +165,42 @@ class User_Manager(QTableWidget):
         self.load_data()  # Reload data after deletion
         QMessageBox.information(self, "Delete", "Data deleted successfully.")
 
-    # def save_changes(self, item):
-    #     print("Save Changes Called")
-    #     # This slot will be automatically called when any item in the QTableWidget changes
-    #     row = item.row()
-    #     col = item.column()
-    #
-    #     user_id = int(self.ui.users_tableWidget.item(row, 0).text())
-    #     login = self.ui.users_tableWidget.item(row, 1).text()
-    #     password = self.ui.users_tableWidget.item(row, 2).text()
-    #
-    #     # Query the database to get the user with the given ID
-    #     user = self.database_session.query(models.users.Users).filter_by(ID=user_id).first()
-    #
-    #     # Update the user's data
-    #     if user:
-    #         if col == 1:
-    #             user.Login = login
-    #         elif col == 2:
-    #             user.Password = password
-    #
-    #         try:
-    #             print(self.database_session.query(models.users.Users).filter_by(ID=user_id).first().statement)
-    #
-    #             # Commit the changes to the database
-    #             self.database_session.commit()
-    #         except Exception as e:
-    #             print(f"Error committing changes: {e}")
-
 
     def set_row_height(self, h):
-        for row in range(self.ui.users_tableWidget.rowCount()):
-            self.ui.users_tableWidget.setRowHeight(row, h)
-    def set_column_width(self, column, width):
-        self.ui.users_tableWidget.setColumnWidth(column, width)
+        for row in range(self.users_table_widget.rowCount()):
+            self.users_table_widget.setRowHeight(row, h)
+    def set_column_width(self, width):
+
+        self.users_table_widget.setColumnWidth(0, 35)
+        for c in range(1,self.users_table_widget.columnCount()):
+            self.users_table_widget.setColumnWidth(c, width)
 
     def load_data(self):
-        self.ui.users_tableWidget.setRowCount(0)
+        self.users_table_widget.setRowCount(0)
         users = self.database_session.query(models.users.Users).all()
 
         index = 0
         for user in users:
-            self.ui.users_tableWidget.insertRow(index)
+            self.users_table_widget.insertRow(index)
 
-            # Set checkboxes in the vertical header
-            item_id = QTableWidgetItem(str(user.ID))
-            item_id.setFlags(item_id.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.ui.users_tableWidget.setVerticalHeaderItem(index, item_id)
+
 
             # Set other items in the table
-            self.ui.users_tableWidget.setItem(index, 0, QTableWidgetItem(str(user.ID)))
-            self.ui.users_tableWidget.setItem(index, 1, QTableWidgetItem(str(user.Login)))
-            self.ui.users_tableWidget.setItem(index, 2, QTableWidgetItem(str(user.Password)))
-            self.ui.users_tableWidget.setItem(index, 3, QTableWidgetItem(str(user.First_Name)))
-            self.ui.users_tableWidget.setItem(index, 4, QTableWidgetItem(str(user.Last_Name)))
-            self.ui.users_tableWidget.setItem(index, 5, QTableWidgetItem(str(user.Email)))
-            self.ui.users_tableWidget.setItem(index, 6, QTableWidgetItem(str(user.Type)))
+            self.users_table_widget.setItem(index, 0, QTableWidgetItem(str(user.ID)))
+            self.users_table_widget.setItem(index, 1, QTableWidgetItem(str(user.Login)))
+            self.users_table_widget.setItem(index, 2, QTableWidgetItem(str(user.Password)))
+            self.users_table_widget.setItem(index, 3, QTableWidgetItem(str(user.First_Name)))
+            self.users_table_widget.setItem(index, 4, QTableWidgetItem(str(user.Last_Name)))
+            self.users_table_widget.setItem(index, 5, QTableWidgetItem(str(user.Email)))
+            self.users_table_widget.setItem(index, 6, QTableWidgetItem(str(user.Type)))
 
-            # Add a checkbox to the vertical header
-            checkbox_item = QTableWidgetItem()
-            checkbox_item.setFlags(checkbox_item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-            checkbox_item.setCheckState(Qt.CheckState.Unchecked)
-            self.ui.users_tableWidget.setVerticalHeaderItem(index, checkbox_item)
+
 
             index += 1
 
         # Set the vertical header to show checkboxes
-        self.ui.users_tableWidget.verticalHeader().setSectionsClickable(True)
-        # self.ui.users_tableWidget.verticalHeader().setDefaultSectionSize(50)
-        # self.ui.users_tableWidget.verticalHeader().setMinimumSectionSize(50)
+        self.users_table_widget.verticalHeader().setSectionsClickable(True)
+        self.users_table_widget.verticalHeader().setFixedWidth(30)
+        self.users_table_widget.verticalHeader().setDefaultSectionSize(50)
+        self.users_table_widget.verticalHeader().setMinimumSectionSize(50)
 

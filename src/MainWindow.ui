@@ -145,6 +145,9 @@
                <iconset resource="../resources/resource.qrc">
                 <normaloff>:/icon/icons/search-9-32.ico</normaloff>:/icon/icons/search-9-32.ico</iconset>
               </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
            </layout>

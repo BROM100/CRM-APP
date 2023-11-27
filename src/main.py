@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication
+from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidgetItem, QWidget, QAbstractScrollArea
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
@@ -29,11 +29,13 @@ class MainWindow(QMainWindow):
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
-
-
-        self.users_table_widget = users_class_manager.User_Manager(self.ui, self.session)
+        self.adjust_to_screen_size()
+        self.showMaximized()
+        self.users_table_widget = users_class_manager.User_Manager(
+            self.ui.users_tableWidget,
+            self.session)
         self.users_table_widget.load_data()
-
+        
 
         # Execute SQL query to fetch data from the "users" table
         # query = "SELECT ID, Login, Password FROM Users"
@@ -47,7 +49,14 @@ class MainWindow(QMainWindow):
         #         item = QTableWidgetItem(str(column_data))
         #         self.ui.tableWidget.setItem(row_number, column_number, item)
 
+    def adjust_to_screen_size(self):
+        screen = QApplication.primaryScreen()
+        screen_rect = screen.geometry()
+        self.resize(screen_rect.width(), screen_rect.height())
+   # def on_search_btn_toggled(self):
 
+    def on_search_input_changed(self, text):
+        print(f"Search input changed: {text}")
     #Buttons actions
     def on_add_user_pressed(self):
         self.users_table_widget.add_new_row()
@@ -100,12 +109,14 @@ class MainWindow(QMainWindow):
 
     def on_user_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(1)
-        self.users_table_widget.ui = self.ui
+        #self.users_table_widget.ui = self.ui
         self.users_table_widget.set_row_height(1)
-        self.users_table_widget.set_column_width(0,35)
-        for c in range(1,self.users_table_widget.columnCount()):
-            self.users_table_widget.set_column_width(c, 130)
+        # self.users_table_widget.set_column_width(0,35)
+        self.users_table_widget.set_column_width(200)
 
+
+    # def on_search_btn_toggled(self):
+    #     self.ui.users_tableWidget.search_data()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

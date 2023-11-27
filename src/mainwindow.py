@@ -61,6 +61,7 @@ class Ui_MainWindow(object):
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/icon/icons/search-9-32.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.search_btn.setIcon(icon1)
+        self.search_btn.setCheckable(True)
         self.search_btn.setObjectName("search_btn")
         self.horizontalLayout_7.addWidget(self.search_btn)
         self.gridLayout_17.addLayout(self.horizontalLayout_7, 0, 2, 1, 1)
