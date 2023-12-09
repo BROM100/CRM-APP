@@ -6,11 +6,13 @@ from sqlalchemy.orm import sessionmaker
 from managers import users_class_manager
 from mainwindow import Ui_MainWindow
 from resources import resource_rc
+from PyQt6.QtCore import Qt, pyqtSignal
 
 #Base = declarative_base()
 
 
 class MainWindow(QMainWindow):
+    clicked = pyqtSignal()
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -30,34 +32,29 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
         self.adjust_to_screen_size()
-        self.showMaximized()
+        self.showFullScreen()
+        #self.showMaximized()
         self.users_table_widget = users_class_manager.User_Manager(
             self.ui.users_tableWidget,
             self.session)
         self.users_table_widget.load_data()
-        
 
-        # Execute SQL query to fetch data from the "users" table
-        # query = "SELECT ID, Login, Password FROM Users"
-        # self.cursor.execute(query)
-        # data = self.cursor.fetchall()
 
-        # Populate data into the QTableWidget
-        # for row_number, row_data in enumerate(data):
-        #     self.ui.tableWidget.insertRow(row_number)
-        #     for column_number, column_data in enumerate(row_data):
-        #         item = QTableWidgetItem(str(column_data))
-        #         self.ui.tableWidget.setItem(row_number, column_number, item)
-
+        self.clicked.connect(self.users_table_widget.clear_selection)
+    def mousePressEvent(self, event):
+        # Emit the clicked signal when the user clicks inside the main window
+        self.clicked.emit()
+        super().mousePressEvent(event)
     def adjust_to_screen_size(self):
         screen = QApplication.primaryScreen()
         screen_rect = screen.geometry()
         self.resize(screen_rect.width(), screen_rect.height())
-   # def on_search_btn_toggled(self):
 
+    ###Buttons actions###
     def on_search_input_changed(self, text):
         print(f"Search input changed: {text}")
-    #Buttons actions
+
+    # def on_search_btn_toggled(self):
     def on_add_user_pressed(self):
         self.users_table_widget.add_new_row()
 

@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget
-from PyQt6.QtCore import Qt, QSortFilterProxyModel
+from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView
+from PyQt6.QtCore import Qt, QSortFilterProxyModel,QItemSelectionModel, QItemSelection
 from PyQt6.QtGui import QIcon
 # from sqlalchemy.ext.declarative import declarative_base
 import models.users
@@ -51,6 +51,7 @@ class UserAddDialog(QDialog):
         self.cancel_button.clicked.connect(self.reject)
 
         self.setLayout(self.layout)
+
 class User_Manager(QTableWidget):
 
     def __init__(self, users_table_widget, session):
@@ -58,7 +59,14 @@ class User_Manager(QTableWidget):
         self.users_table_widget = users_table_widget
         self.database_session = session
 
+        #Multiselection feature to QtableWidget
+        self.users_table_widget.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+        #Column Sorting feature to QtableWidget
+        self.users_table_widget.setSortingEnabled(True)
 
+    def clear_selection(self):
+        # Clear the selection in the QTableWidget
+        self.users_table_widget.selectionModel().clearSelection()
     def add_new_row(self):
         print("Signal emitted: add_new_row")
         # Create an instance of the dialog for adding a new user
@@ -183,19 +191,10 @@ class User_Manager(QTableWidget):
         for user in users:
             self.users_table_widget.insertRow(index)
 
-
-
-            # Set other items in the table
-            self.users_table_widget.setItem(index, 0, QTableWidgetItem(str(user.ID)))
-            self.users_table_widget.setItem(index, 1, QTableWidgetItem(str(user.Login)))
-            self.users_table_widget.setItem(index, 2, QTableWidgetItem(str(user.Password)))
-            self.users_table_widget.setItem(index, 3, QTableWidgetItem(str(user.First_Name)))
-            self.users_table_widget.setItem(index, 4, QTableWidgetItem(str(user.Last_Name)))
-            self.users_table_widget.setItem(index, 5, QTableWidgetItem(str(user.Email)))
-            self.users_table_widget.setItem(index, 6, QTableWidgetItem(str(user.Type)))
-
-
-
+            for col, value in enumerate([str(user.ID), str(user.Login), str(user.Password), str(user.First_Name),
+                                         str(user.Last_Name), str(user.Email), str(user.Type)]):
+                item = QTableWidgetItem(value)
+                self.users_table_widget.setItem(index, col, item)
             index += 1
 
         # Set the vertical header to show checkboxes
@@ -203,4 +202,5 @@ class User_Manager(QTableWidget):
         self.users_table_widget.verticalHeader().setFixedWidth(30)
         self.users_table_widget.verticalHeader().setDefaultSectionSize(50)
         self.users_table_widget.verticalHeader().setMinimumSectionSize(50)
+
 
