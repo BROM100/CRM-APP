@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidgetItem, QWidget, QAbstractScrollArea
+from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidgetItem, QWidget, QAbstractScrollArea, QVBoxLayout, QMessageBox
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
@@ -7,9 +7,26 @@ from managers import users_class_manager
 from mainwindow import Ui_MainWindow
 from resources import resource_rc
 from PyQt6.QtCore import Qt, pyqtSignal
+import numpy as np
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 #Base = declarative_base()
+class PieChartCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(PieChartCanvas, self).__init__(fig)
+        self.setParent(parent)
 
+    def plot_data(self, user_data):
+        categories = ['Standard', 'Admin']
+        values = [user_data['standard'], user_data['admin']]
+
+        self.axes.pie(values, labels=categories, autopct='%1.1f%%', startangle=0)
+        self.axes.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        self.axes.set_title('Users Types')
+        self.draw()
 
 class MainWindow(QMainWindow):
     clicked = pyqtSignal()
@@ -27,6 +44,7 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.chart1_layout = QVBoxLayout(self.ui.chart1_widget)
 
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -69,7 +87,25 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(0)
 
     def on_dashboard_btn1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(2)
+        try:
+            self.ui.stackedWidget.setCurrentIndex(2)
+
+            # Pobierz dane o użytkownikach z User_Manager
+            user_data = {
+                'standard': self.users_table_widget.count_standard_users(),
+                'admin': self.users_table_widget.count_admin_users()
+            }
+            print(user_data)
+            # Dodaj wykres kolumnowy do widgetu chart1_widget
+            chart_widget = QWidget(self.ui.chart1_widget)
+            pie_chart_canvas = PieChartCanvas(chart_widget, width=5, height=4, dpi=100)
+            self.chart1_layout.addWidget(pie_chart_canvas)
+
+            # Przekaz dane do wykresu
+            pie_chart_canvas.plot_data(user_data)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
 
     def on_dashboard_btn2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(2)

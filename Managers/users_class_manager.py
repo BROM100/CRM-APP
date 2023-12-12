@@ -67,6 +67,14 @@ class User_Manager(QTableWidget):
     def clear_selection(self):
         # Clear the selection in the QTableWidget
         self.users_table_widget.selectionModel().clearSelection()
+
+    def count_standard_users(self):
+        return len([1 for row in range(self.users_table_widget.rowCount())
+                    if self.users_table_widget.item(row, 6).text().lower() == 'standard'])
+
+    def count_admin_users(self):
+        return len([1 for row in range(self.users_table_widget.rowCount())
+                    if self.users_table_widget.item(row, 6).text().lower() == 'admin'])
     def add_new_row(self):
         print("Signal emitted: add_new_row")
         # Create an instance of the dialog for adding a new user
