@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidget
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
-from managers import users_class_manager
+from managers import users_class_manager, customers_class_manager
 from mainwindow import Ui_MainWindow
 from resources import resource_rc
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -57,6 +57,10 @@ class MainWindow(QMainWindow):
             self.session)
         self.users_table_widget.load_data()
 
+        self.customers_table_widget = customers_class_manager.Customer_Manager(
+            self.ui.customers_tableWidget,
+            self.session)
+        self.customers_table_widget.load_data()
 
         self.clicked.connect(self.users_table_widget.clear_selection)
     def mousePressEvent(self, event):
