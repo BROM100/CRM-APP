@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView
+from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView, QHeaderView
 from PyQt6.QtCore import Qt, QSortFilterProxyModel,QItemSelectionModel, QItemSelection
 from PyQt6.QtGui import QIcon
 # from sqlalchemy.ext.declarative import declarative_base
@@ -63,7 +63,7 @@ class User_Manager(QTableWidget):
         self.users_table_widget.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
         #Column Sorting feature to QtableWidget
         self.users_table_widget.setSortingEnabled(True)
-
+        self.users_table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
     def clear_selection(self):
         # Clear the selection in the QTableWidget
         self.users_table_widget.selectionModel().clearSelection()

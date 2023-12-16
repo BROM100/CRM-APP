@@ -192,7 +192,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>5</number>
+          <number>6</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_2">
@@ -486,12 +486,12 @@
              </column>
              <column>
               <property name="text">
-               <string>New Column</string>
+               <string>Lead</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Lead</string>
+               <string>Department</string>
               </property>
              </column>
             </widget>
@@ -552,17 +552,17 @@
              </column>
              <column>
               <property name="text">
-               <string>New Column</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>First Name</string>
               </property>
              </column>
              <column>
               <property name="text">
                <string>Last Name</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Email</string>
               </property>
              </column>
              <column>
@@ -577,7 +577,7 @@
              </column>
              <column>
               <property name="text">
-               <string>New Column</string>
+               <string>Do not Call</string>
               </property>
              </column>
              <column>
