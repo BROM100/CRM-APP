@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
 from managers import users_class_manager, customers_class_manager, contacts_class_manager
 from mainwindow import Ui_MainWindow
+from managers.customers_class_manager import CreateCustomerDialog
 from resources import resource_rc
 from PyQt6.QtCore import Qt, pyqtSignal
 import numpy as np
@@ -68,6 +69,8 @@ class MainWindow(QMainWindow):
         self.customers_table_widget.load_data()
 
         self.clicked.connect(self.users_table_widget.clear_selection)
+        self.clicked.connect(self.customers_table_widget.clear_selection)
+        self.clicked.connect(self.contacts_table_widget.clear_selection)
     def mousePressEvent(self, event):
         # Emit the clicked signal when the user clicks inside the main window
         self.clicked.emit()
@@ -82,13 +85,23 @@ class MainWindow(QMainWindow):
         print(f"Search input changed: {text}")
 
     # def on_search_btn_toggled(self):
+    """users_tableWidget buttons"""
     def on_add_user_pressed(self):
         self.users_table_widget.add_new_row()
-
     def on_save_user_pressed(self):
         self.users_table_widget.save_data()
     def on_delete_user_pressed(self):
         self.users_table_widget.delete_data()
+
+
+    """customers_tableWidget buttons"""
+    def on_add_customer_pressed(self):
+        self.customers_table_widget.add_new_row()
+    def on_save_customer_pressed(self):
+        self.customers_table_widget.save_data()
+    def on_delete_customer_pressed(self):
+        self.customers_table_widget.delete_data()
+
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 

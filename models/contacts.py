@@ -6,12 +6,12 @@ from .base import Base
 
 class Contacts(Base):
     __tablename__ = "Contacts"
-    ID = Column(String, primary_key=True)
+    ID = Column(Integer, primary_key=True)
     First_name = Column(String)
     Last_name = Column(String)
     Email = Column(String)
     Phone = Column(String)
-    Gender = Column(Integer)
-    Do_not_call = Column(String)
+    Gender = Column(String)
+    Do_not_call = Column(Integer)
 
     customers = relationship("Customers", back_populates="contact")

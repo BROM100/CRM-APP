@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship, backref, sessionmaker,declarative_base,
 from .base import Base
 class Customers(Base):
     __tablename__ = "Customers"
-    ID = Column(String, primary_key=True)
+    ID = Column(Integer, primary_key=True)
     Name = Column(String)
     Address = Column(String)
     Domain = Column(String)

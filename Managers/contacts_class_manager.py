@@ -18,7 +18,9 @@ class Contacts_Manager(QTableWidget):
         # Column Sorting feature to QtableWidget
         self.contacts_table_widget.setSortingEnabled(True)
         self.contacts_table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-
+    def clear_selection(self):
+        # Clear the selection in the QTableWidget
+        self.contacts_table_widget.selectionModel().clearSelection()
     def load_data(self):
         self.contacts_table_widget.setRowCount(0)
         contacts = self.database_session.query(models.contacts.Contacts).all()
