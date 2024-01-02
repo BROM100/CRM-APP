@@ -14,4 +14,4 @@ class Contacts(Base):
     Gender = Column(String)
     Do_not_call = Column(Integer)
 
-    customers = relationship("Customers", back_populates="contact")
+    customers = relationship("Customers", back_populates="contact", lazy='joined')

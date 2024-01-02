@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidgetItem, QWidget, QAbstractScrollArea, QVBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidgetItem, QWidget, QAbstractScrollArea, QVBoxLayout, QMessageBox, QLabel, QDialog
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
+
         self.adjust_to_screen_size()
         self.showFullScreen()
         #self.showMaximized()
@@ -85,7 +86,7 @@ class MainWindow(QMainWindow):
         print(f"Search input changed: {text}")
 
     # def on_search_btn_toggled(self):
-    """users_tableWidget buttons"""
+    """users_tableWidget CRUD buttons"""
     def on_add_user_pressed(self):
         self.users_table_widget.add_new_row()
     def on_save_user_pressed(self):
@@ -94,13 +95,24 @@ class MainWindow(QMainWindow):
         self.users_table_widget.delete_data()
 
 
-    """customers_tableWidget buttons"""
+    """customers_tableWidget CRUD buttons"""
     def on_add_customer_pressed(self):
         self.customers_table_widget.add_new_row()
     def on_save_customer_pressed(self):
         self.customers_table_widget.save_data()
     def on_delete_customer_pressed(self):
         self.customers_table_widget.delete_data()
+
+    """contacts_tableWidget CRUD buttons"""
+
+    def on_add_contact_pressed(self):
+        self.contacts_table_widget.add_new_row()
+
+    def on_save_contact_pressed(self):
+        self.contacts_table_widget.save_data()
+
+    def on_delete_contact_pressed(self):
+        self.contacts_table_widget.delete_data()
 
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -110,6 +122,7 @@ class MainWindow(QMainWindow):
 
     def on_dashboard_btn1_toggled(self):
         try:
+
             self.ui.stackedWidget.setCurrentIndex(2)
 
             # Pobierz dane o użytkownikach z User_Manager
@@ -118,6 +131,7 @@ class MainWindow(QMainWindow):
                 'admin': self.users_table_widget.count_admin_users()
             }
             print(user_data)
+            self.clear_layout(self.chart1_layout)
             # Dodaj wykres kolumnowy do widgetu chart1_widget
             chart_widget = QWidget(self.ui.chart1_widget)
             pie_chart_canvas = PieChartCanvas(chart_widget, width=5, height=4, dpi=100)
@@ -128,6 +142,14 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
 
+    def clear_layout(self, layout):
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.setParent(None)
+            else:
+                self.clear_layout(item.layout())
 
     def on_dashboard_btn2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(2)
@@ -170,8 +192,8 @@ class MainWindow(QMainWindow):
         self.users_table_widget.set_column_width(200)
 
 
-    # def on_search_btn_toggled(self):
-    #     self.ui.users_tableWidget.search_data()
+    #def on_search_btn_toggled(self):
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

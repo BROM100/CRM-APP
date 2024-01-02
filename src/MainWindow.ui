@@ -580,11 +580,6 @@
                <string>Do not Call</string>
               </property>
              </column>
-             <column>
-              <property name="text">
-               <string>Customer</string>
-              </property>
-             </column>
             </widget>
            </item>
           </layout>

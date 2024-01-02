@@ -1,14 +1,11 @@
-from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout,
-                             QLabel, QWidget, QAbstractItemView, QHeaderView, QComboBox, QDialogButtonBox, QFormLayout,
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget, QMessageBox, QLineEdit, QDialog, QVBoxLayout,
+                             QLabel, QAbstractItemView, QHeaderView, QComboBox, QDialogButtonBox, QFormLayout,
                              QCheckBox)
 
-from PyQt6.QtCore import Qt, QSortFilterProxyModel,QItemSelectionModel, QItemSelection
-from PyQt6.QtGui import QIcon
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import joinedload
 import models.customers
 from models.customers import Customers
-import uuid
+
 
 class CreateCustomerDialog(QDialog):
     def __init__(self, generate_new_customer_id, existing_contacts, parent=None):
@@ -33,9 +30,10 @@ class CreateCustomerDialog(QDialog):
 
         # Populate contact combo with existing contacts
         for contact in self.existing_contacts:
-            self.contact_id_combo.addItem(f"{contact.First_name} {contact.Last_name}", contact.ID)
+            contact_text = f"{contact.First_name} {contact.Last_name} (ID: {contact.ID})"
+            self.contact_id_combo.addItem(contact_text, contact.ID)
 
-        self.do_not_call_checkbox = QCheckBox("Do Not Call")
+
 
         layout.addWidget(QLabel("Name:"))
         layout.addWidget(self.name_edit)
@@ -53,7 +51,7 @@ class CreateCustomerDialog(QDialog):
         layout.addWidget(self.department_edit)
         layout.addWidget(QLabel("Contact ID:"))
         layout.addWidget(self.contact_id_combo)
-        layout.addWidget(self.do_not_call_checkbox)
+
 
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
@@ -218,7 +216,7 @@ class Customer_Manager(QTableWidget):
         if result == QDialog.DialogCode.Accepted:
             # Reload data after creating a new customer
             self.load_data()
-    
+
 
     def show_contact_details(self, item):
         if item.column() == 5:  # "Contact" column
@@ -262,6 +260,7 @@ class Customer_Manager(QTableWidget):
                     # Open the dialog for editing contact details
                     dialog = EditContactDialog(self, contact)
                     result = dialog.exec()
+
 
                     if result == QDialog.DialogCode.Accepted:
                         # Save the changes to the database
@@ -348,12 +347,12 @@ class EditContactDialog(QDialog):
                 self.parent().customer.contact = None
                 self.parent().database_session.commit()
                 self.parent().show_contact_details(self.parent().customers_table_widget.currentItem())
-
+                # Close the dialog
+                super(EditContactDialog, self).accept()
                 # Reload data after deleting the contact
                 self.parent().load_data()
 
-                # Close the dialog
-                super(EditContactDialog, self).accept()
+
 
             except Exception as e:
                 print(f"Error deleting contact: {e}")
@@ -408,7 +407,9 @@ class ChooseContactDialog(QDialog):
         layout.addRow("Choose Contact:", self.contact_combo)
 
         for contact in contacts:
-            self.contact_combo.addItem(f"{contact.First_name} {contact.Last_name}", contact)
+            # self.contact_combo.addItem(f"{contact.First_name} {contact.Last_name}", contact)
+            contact_text = f"{contact.First_name} {contact.Last_name} (ID: {contact.ID})"
+            self.contact_combo.addItem(contact_text, contact.ID)
 
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
@@ -422,7 +423,7 @@ class ChooseContactDialog(QDialog):
     def get_selected_contact(self):
         index = self.contact_combo.currentIndex()
         if index != -1:
-            return self.contact_combo.itemData(index)
+            return self.contacts[index]
         else:
             return None
 
