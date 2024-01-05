@@ -114,14 +114,14 @@ class Customer_Manager(QTableWidget):
         index = 0
         for customer in customers:
             self.customers_table_widget.insertRow(index)
-
+            lead = customer.lead.Name if customer.lead else ""
             contact_first_name = customer.contact.First_name if customer.contact else ""
             contact_last_name = customer.contact.Last_name if customer.contact else ""
 
             for col, value in enumerate(
                     [str(customer.ID), str(customer.Name), str(customer.Address), str(customer.Domain),
                      str(customer.IBAN), f"{contact_first_name} {contact_last_name}", str(customer.Orders_count),
-                     str(customer.Lead_ID), str(customer.Department)]):
+                     f"{lead}", str(customer.Department)]):
                 item = QTableWidgetItem(value)
 
                 if col in {0,5}: #Columns: "ID" and "Contact"

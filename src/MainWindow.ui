@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1122</width>
+    <width>1158</width>
     <height>869</height>
    </rect>
   </property>
@@ -192,9 +192,9 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>7</number>
+          <number>1</number>
          </property>
-         <widget class="QWidget" name="page">
+         <widget class="QWidget" name="Home_page">
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
             <widget class="QLabel" name="label_7">
@@ -219,34 +219,13 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_8">
+         <widget class="QWidget" name="Users_page">
           <layout class="QGridLayout" name="gridLayout_9">
            <item row="0" column="0">
             <widget class="QTableWidget" name="users_tableWidget">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="cursor" stdset="0">
-              <cursorShape>SizeAllCursor</cursorShape>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::ActionsContextMenu</enum>
-             </property>
-             <attribute name="verticalHeaderMinimumSectionSize">
-              <number>100</number>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>100</number>
-             </attribute>
-             <attribute name="verticalHeaderHighlightSections">
-              <bool>true</bool>
-             </attribute>
              <column>
               <property name="text">
-               <string>Id</string>
+               <string>ID</string>
               </property>
              </column>
              <column>
@@ -326,7 +305,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_2">
+         <widget class="QWidget" name="Dashboard_page">
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_10">
@@ -352,12 +331,12 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_3">
+         <widget class="QWidget" name="Orders_page">
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
             <widget class="QTableWidget" name="orders_tableWidget">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -464,12 +443,12 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_4">
+         <widget class="QWidget" name="Products_page">
           <layout class="QGridLayout" name="gridLayout_5">
            <item row="0" column="0">
             <widget class="QTableWidget" name="products_tableWidget">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -561,7 +540,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_5">
+         <widget class="QWidget" name="Customers_page">
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="1" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_11">
@@ -657,7 +636,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_6">
+         <widget class="QWidget" name="Contacts_page">
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="1" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -743,39 +722,13 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="page_7">
+         <widget class="QWidget" name="Leads_page">
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="0" column="0">
             <widget class="QTableWidget" name="leads_tableWidget">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="cursor" stdset="0">
-              <cursorShape>SizeAllCursor</cursorShape>
-             </property>
-             <property name="contextMenuPolicy">
-              <enum>Qt::ActionsContextMenu</enum>
-             </property>
-             <attribute name="verticalHeaderMinimumSectionSize">
-              <number>100</number>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>100</number>
-             </attribute>
-             <attribute name="verticalHeaderHighlightSections">
-              <bool>true</bool>
-             </attribute>
              <column>
               <property name="text">
-               <string>Id</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>New Column</string>
+               <string>ID</string>
               </property>
              </column>
              <column>
@@ -790,17 +743,22 @@
              </column>
              <column>
               <property name="text">
+               <string>Sector</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Phone</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Status</string>
+               <string>Source</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>Contracted</string>
+               <string>Status</string>
               </property>
              </column>
             </widget>

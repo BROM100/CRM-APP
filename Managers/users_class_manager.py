@@ -181,16 +181,6 @@ class User_Manager(QTableWidget):
         self.load_data()  # Reload data after deletion
         QMessageBox.information(self, "Delete", "Data deleted successfully.")
 
-
-    def set_row_height(self, h):
-        for row in range(self.users_table_widget.rowCount()):
-            self.users_table_widget.setRowHeight(row, h)
-    def set_column_width(self, width):
-
-        self.users_table_widget.setColumnWidth(0, 35)
-        for c in range(1,self.users_table_widget.columnCount()):
-            self.users_table_widget.setColumnWidth(c, width)
-
     def load_data(self):
         self.users_table_widget.setRowCount(0)
         users = self.database_session.query(models.users.Users).all()

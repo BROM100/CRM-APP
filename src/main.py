@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidget
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
-from managers import users_class_manager, customers_class_manager, contacts_class_manager
+from managers import users_class_manager, customers_class_manager, contacts_class_manager, leads_class_manager
 from mainwindow import Ui_MainWindow
 from managers.customers_class_manager import CreateCustomerDialog
 from resources import resource_rc
@@ -59,6 +59,11 @@ class MainWindow(QMainWindow):
             self.session)
         self.users_table_widget.load_data()
 
+        self.leads_table_widget = leads_class_manager.Leads_Manager(
+            self.ui.leads_tableWidget,
+            self.session)
+        self.leads_table_widget.load_data()
+
         self.contacts_table_widget = contacts_class_manager.Contacts_Manager(
             self.ui.contacts_tableWidget,
             self.session)
@@ -72,6 +77,7 @@ class MainWindow(QMainWindow):
         self.clicked.connect(self.users_table_widget.clear_selection)
         self.clicked.connect(self.customers_table_widget.clear_selection)
         self.clicked.connect(self.contacts_table_widget.clear_selection)
+        self.clicked.connect(self.leads_table_widget.clear_selection)
     def mousePressEvent(self, event):
         # Emit the clicked signal when the user clicks inside the main window
         self.clicked.emit()
@@ -186,10 +192,7 @@ class MainWindow(QMainWindow):
 
     def on_user_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(1)
-        #self.users_table_widget.ui = self.ui
-        self.users_table_widget.set_row_height(1)
-        # self.users_table_widget.set_column_width(0,35)
-        self.users_table_widget.set_column_width(200)
+
 
 
     #def on_search_btn_toggled(self):

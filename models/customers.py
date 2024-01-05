@@ -12,7 +12,8 @@ class Customers(Base):
     IBAN = Column(String)
     Contact_ID = Column(Integer, ForeignKey('Contacts.ID'))
     Orders_count = Column(String)
-    Lead_ID = Column(Integer)
+    Lead_ID = Column(Integer, ForeignKey('Leads.ID'))
     Department = Column(String)
 
     contact = relationship("Contacts", back_populates="customers", lazy='joined')
+    lead = relationship("Leads", back_populates="customer", lazy='joined')
