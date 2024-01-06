@@ -115,6 +115,7 @@ class Customer_Manager(QTableWidget):
         for customer in customers:
             self.customers_table_widget.insertRow(index)
             lead = customer.lead.Name if customer.lead else ""
+            #print(lead)
             contact_first_name = customer.contact.First_name if customer.contact else ""
             contact_last_name = customer.contact.Last_name if customer.contact else ""
 
@@ -150,7 +151,7 @@ class Customer_Manager(QTableWidget):
                 iban = self.customers_table_widget.item(row, 4).text()
                 #contact_id = self.customers_table_widget.item(row, 5).text()
                 orders_count = self.customers_table_widget.item(row, 6).text()
-                lead_id = self.customers_table_widget.item(row, 7).text()
+                # lead_id = self.customers_table_widget.item(row, 7).text()
                 department = self.customers_table_widget.item(row, 8).text()
                 # Update or insert the customer data into the database
                 customer = self.database_session.query(models.customers.Customers).filter_by(ID=customer_id).first()
@@ -161,12 +162,14 @@ class Customer_Manager(QTableWidget):
                     customer.IBAN = iban
                     #customer.Contact_ID = contact_id
                     customer.Orders_count = orders_count
-                    customer.Lead_ID = lead_id
+                    # customer.Lead_ID = lead_id
                     customer.Department = department
                 else:
                     new_customer = models.customers.Customers(ID=customer_id, Name=name, Address=address,
                                                               Domain=domain, IBAN=iban, #Contact_ID=contact_id,
-                                                              Orders_count=orders_count, Lead_ID=lead_id, Department=department )
+                                                              Orders_count=orders_count, #Lead_ID=lead_id,
+                                                              Department=department )
+
 
                     self.database_session.add(new_customer)
 

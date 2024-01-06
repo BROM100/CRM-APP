@@ -17,4 +17,3 @@ class Leads(Base):
 
 
     customer = relationship("Customers", back_populates="lead", lazy='joined')
-    #customer = relationship("Customers", back_populates="leads", foreign_keys="Customers.Lead_ID", lazy='joined')

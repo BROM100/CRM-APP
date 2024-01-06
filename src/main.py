@@ -120,6 +120,17 @@ class MainWindow(QMainWindow):
     def on_delete_contact_pressed(self):
         self.contacts_table_widget.delete_data()
 
+    """leads_tableWidget CRUD buttons"""
+    def on_add_lead_pressed(self):
+        self.leads_table_widget.add_new_row()
+
+    def on_save_lead_pressed(self):
+        self.leads_table_widget.save_data()
+
+    def on_delete_lead_pressed(self):
+        self.leads_table_widget.delete_data()
+
+
     def on_home_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 
