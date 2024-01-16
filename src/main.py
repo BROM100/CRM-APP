@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidget
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 # from sqlalchemy.ext.declarative import declarative_base
-from managers import users_class_manager, customers_class_manager, contacts_class_manager, leads_class_manager
+from managers import users_class_manager, customers_class_manager, contacts_class_manager, leads_class_manager, products_class_manager, orders_class_manager
 from mainwindow import Ui_MainWindow
 from managers.customers_class_manager import CreateCustomerDialog
 from resources import resource_rc
@@ -73,6 +73,16 @@ class MainWindow(QMainWindow):
             self.ui.customers_tableWidget,
             self.session)
         self.customers_table_widget.load_data()
+
+        self.products_table_wiget = products_class_manager.Products_Manager(
+            self.ui.products_tableWidget,
+            self.session)
+        self.products_table_wiget.load_data()
+
+        self.orders_table_wiget = orders_class_manager.Orders_Manager(
+            self.ui.orders_tableWidget,
+            self.session)
+        self.orders_table_wiget.load_data()
 
         self.clicked.connect(self.users_table_widget.clear_selection)
         self.clicked.connect(self.customers_table_widget.clear_selection)

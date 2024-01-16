@@ -16,4 +16,5 @@ class Users(Base):
     Email = Column(String)
     Type = Column(String)
 
+    orders = relationship("Orders", back_populates="user", lazy='joined')
 

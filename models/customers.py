@@ -17,3 +17,4 @@ class Customers(Base):
 
     contact = relationship("Contacts", back_populates="customers", lazy='joined')
     lead = relationship("Leads", back_populates="customer", lazy='joined')
+    orders = relationship("Orders", back_populates="customer", lazy='joined')
