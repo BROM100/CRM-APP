@@ -1,9 +1,11 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QTableWidgetItem, QTableWidget, QMessageBox, QAbstractItemView, QHeaderView, QCheckBox, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QDialog
-
+from PyQt6.QtWidgets import QTableWidgetItem, QTableWidget, QMessageBox, QAbstractItemView, QHeaderView, QLabel, \
+    QLineEdit, QPushButton, QVBoxLayout, QDialog
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import text
+
 import models.contacts
+
 
 class UserAddDialog(QDialog):
     def __init__(self):

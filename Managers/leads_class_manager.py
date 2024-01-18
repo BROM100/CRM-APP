@@ -1,9 +1,11 @@
-from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView,
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget, QMessageBox, QLineEdit, QDialog, QVBoxLayout,
+                             QLabel, QAbstractItemView,
                              QHeaderView, QInputDialog)
-from PyQt6.QtCore import Qt, QSortFilterProxyModel,QItemSelectionModel, QItemSelection
-from PyQt6.QtGui import QIcon
+
 # from sqlalchemy.ext.declarative import declarative_base
 import models.leads
+
 
 class LeadAddDialog(QDialog):
     def __init__(self):

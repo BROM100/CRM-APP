@@ -1,6 +1,5 @@
-from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView, QHeaderView
-from PyQt6.QtCore import Qt, QSortFilterProxyModel,QItemSelectionModel, QItemSelection
-from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QTableWidgetItem, QTableWidget, QAbstractItemView, QHeaderView
 
 import models.products
 

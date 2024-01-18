@@ -1,16 +1,16 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QTableWidget,QTableWidgetItem, QWidget, QAbstractScrollArea, QVBoxLayout, QMessageBox, QLabel, QDialog
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.ext.declarative import declarative_base
-from managers import users_class_manager, customers_class_manager, contacts_class_manager, leads_class_manager, products_class_manager, orders_class_manager
-from mainwindow import Ui_MainWindow
-from managers.customers_class_manager import CreateCustomerDialog
 from resources import resource_rc
-from PyQt6.QtCore import Qt, pyqtSignal
-import numpy as np
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from mainwindow import Ui_MainWindow
+from managers import users_class_manager, customers_class_manager, contacts_class_manager, leads_class_manager, \
+    products_class_manager, orders_class_manager
+
 
 #Base = declarative_base()
 class PieChartCanvas(FigureCanvas):
@@ -28,6 +28,50 @@ class PieChartCanvas(FigureCanvas):
         self.axes.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
         self.axes.set_title('Users Types')
         self.draw()
+class ColumnChartCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=1, height=1, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(ColumnChartCanvas, self).__init__(fig)
+        self.setParent(parent)
+
+    def plot_data(self, top_products):
+        product_names = [str(product[0]) for product in top_products]
+        revenues = [float(product[1]) for product in top_products]
+
+        self.axes.bar(product_names, revenues)
+        self.axes.set_ylabel('Revenue')
+        self.axes.set_title('Top Selling Products and Revenue')
+        self.draw()
+
+class BarChartCustomers(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(BarChartCustomers, self).__init__(fig)
+        self.setParent(parent)
+
+    def plot_data(self, top_customers, common_color='green'):
+        customer_names = [str(customer[0]) for customer in top_customers]
+        revenues = [float(customer[1]) for customer in top_customers]
+
+        bars = self.axes.bar(range(len(customer_names)), revenues, color=common_color)
+        self.rotate_labels_vertical(bars, customer_names)
+        self.axes.set_ylabel('Revenue')
+        self.axes.set_title('Top Customers and Revenue')
+        self.adjust_layout()
+        self.draw()
+
+    def adjust_layout(self):
+        self.figure.subplots_adjust(right=0.85)
+
+    def rotate_labels_vertical(self, bars, labels):
+        for bar, label in zip(bars, labels):
+            bar.set_label(label)
+            height = bar.get_height()
+            self.axes.text(bar.get_x() + bar.get_width() / 2, height / 2, label,
+                           ha='center', va='center', rotation='vertical')
+
 
 class MainWindow(QMainWindow):
     clicked = pyqtSignal()
@@ -46,7 +90,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.chart1_layout = QVBoxLayout(self.ui.chart1_widget)
-
+        self.chart2_layout = QVBoxLayout(self.ui.chart2_widget)
+        self.chart3_layout = QVBoxLayout(self.ui.chart3_widget)
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
@@ -148,24 +193,59 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(0)
 
     def on_dashboard_btn1_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(2)
         try:
 
-            self.ui.stackedWidget.setCurrentIndex(2)
 
-            # Pobierz dane o użytkownikach z User_Manager
+            # Fetch top selling products and their revenue
+            top_products = self.orders_table_wiget.get_top_selling_products()
+
+            self.clear_layout(self.ui.chart2_widget.layout())  # Clear chart2_widget layout
+
+            # Create the column chart canvas and add it to chart2_widget
+            chart_widget = QWidget(self.ui.chart2_widget)
+            column_chart_canvas = ColumnChartCanvas(chart_widget, width=5, height=4, dpi=100)
+            self.ui.chart2_widget.layout().addWidget(column_chart_canvas)
+
+            # Plot data on the column chart
+            column_chart_canvas.plot_data(top_products)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+        try:
+
+
             user_data = {
                 'standard': self.users_table_widget.count_standard_users(),
                 'admin': self.users_table_widget.count_admin_users()
             }
-            print(user_data)
+
             self.clear_layout(self.chart1_layout)
-            # Dodaj wykres kolumnowy do widgetu chart1_widget
+
             chart_widget = QWidget(self.ui.chart1_widget)
             pie_chart_canvas = PieChartCanvas(chart_widget, width=5, height=4, dpi=100)
             self.chart1_layout.addWidget(pie_chart_canvas)
 
-            # Przekaz dane do wykresu
+
             pie_chart_canvas.plot_data(user_data)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+        try:
+            # Fetch top customers and their revenue
+            top_customers = self.orders_table_wiget.get_top_customers()
+
+            # Clear the layout of chart3_widget
+            self.clear_layout(self.ui.chart3_widget.layout())
+
+            # Create the bar chart canvas and add it to chart3_widget
+            chart_widget = QWidget(self.ui.chart3_widget)
+            bar_chart_customers = BarChartCustomers(chart_widget, width=5, height=4, dpi=100)
+            self.ui.chart3_widget.layout().addWidget(bar_chart_customers)
+
+            # Plot data on the bar chart
+            bar_chart_customers.plot_data(top_customers)
+
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
 
