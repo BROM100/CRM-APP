@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget, QMessa
                              QCheckBox)
 
 import models.customers
+from models.orders import Orders
 from models.customers import Customers
 
 
@@ -118,10 +119,11 @@ class Customer_Manager(QTableWidget):
             #print(lead)
             contact_first_name = customer.contact.First_name if customer.contact else ""
             contact_last_name = customer.contact.Last_name if customer.contact else ""
+            orders_count = self.calculate_orders_count(customer)
 
             for col, value in enumerate(
                     [str(customer.ID), str(customer.Name), str(customer.Address), str(customer.Domain),
-                     str(customer.IBAN), f"{contact_first_name} {contact_last_name}", str(customer.Orders_count),
+                     str(customer.IBAN), f"{contact_first_name} {contact_last_name}", f"{orders_count}",
                      f"{lead}", str(customer.Department)]):
                 item = QTableWidgetItem(value)
 
@@ -135,6 +137,9 @@ class Customer_Manager(QTableWidget):
         self.customers_table_widget.verticalHeader().setFixedWidth(30)
         self.customers_table_widget.verticalHeader().setDefaultSectionSize(50)
         self.customers_table_widget.verticalHeader().setMinimumSectionSize(50)
+
+    def calculate_orders_count(self, customer):
+        return self.database_session.query(Orders).filter_by(CustomerID=customer.ID).count()
     def save_data(self):
 
         try:

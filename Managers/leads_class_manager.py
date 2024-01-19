@@ -2,7 +2,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget, QMessageBox, QLineEdit, QDialog, QVBoxLayout,
                              QLabel, QAbstractItemView,
                              QHeaderView, QInputDialog)
-
+from collections import defaultdict
 # from sqlalchemy.ext.declarative import declarative_base
 import models.leads
 
@@ -262,3 +262,24 @@ class Leads_Manager(QTableWidget):
         elif field == 'source':
             lead.Source = value
             self.database_session.commit()
+
+    def calculate_lead_status_source_data(self):
+        lead_statuses = ['New', 'On hold', 'In progress', 'Closed']
+        lead_sources = ['Events', 'Social media', 'Direct traffic', 'Paid ads', 'Email marketing']
+
+        data = defaultdict(int)
+
+        leads = self.database_session.query(models.leads.Leads).all()
+
+        for lead in leads:
+            status = lead.Status
+            source = lead.Source
+            data[(status, source)] += 1
+
+        lead_data = {
+            'statuses': lead_statuses,
+            'sources': lead_sources,
+            'data': data
+        }
+
+        return lead_data

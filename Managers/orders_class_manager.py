@@ -1,7 +1,8 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QTableWidgetItem, QTableWidget, QAbstractItemView, QHeaderView)
 from sqlalchemy import desc, func
-
+from datetime import datetime
+from collections import defaultdict
 import models.orders
 from models.customers import Customers
 from models.orders import Orders
@@ -53,7 +54,6 @@ class Orders_Manager(QTableWidget):
 
 
             index += 1
-
         # Set the vertical header to show checkboxes
         self.orders_table_widget.verticalHeader().setSectionsClickable(True)
         self.orders_table_widget.verticalHeader().setFixedWidth(30)
@@ -79,3 +79,34 @@ class Orders_Manager(QTableWidget):
 
         top_customers = query.all()
         return top_customers
+
+    def calculate_yearly_revenue(self):
+        orders = self.database_session.query(models.orders.Orders).all()
+        yearly_revenue = defaultdict(float)
+
+        for order in orders:
+            order_date = datetime.strptime(order.Date, "%m/%d/%Y")  # Adjust the format here
+            year = order_date.year
+            product_price = order.product.Price if order.product else 0
+            total_price = self.calculate_total_price(order, product_price)
+            yearly_revenue[year] += total_price
+
+        yearly_revenue_list = list(yearly_revenue.items())
+        yearly_revenue_list.sort(key=lambda x: x[0])
+
+        return yearly_revenue_list
+
+    def calculate_monthly_revenue(self):
+        orders = self.database_session.query(models.orders.Orders).all()
+
+        monthly_revenue = defaultdict(lambda: defaultdict(float))
+
+        for order in orders:
+            order_date = datetime.strptime(order.Date, "%m/%d/%Y")
+            year = order_date.year
+            month = order_date.strftime("%B")
+            product_price = order.product.Price if order.product else 0
+            total_price = self.calculate_total_price(order, product_price)
+            monthly_revenue[year][month] += total_price
+
+        return monthly_revenue

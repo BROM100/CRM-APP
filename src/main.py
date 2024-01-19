@@ -4,8 +4,15 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QMainWindow, QApplication, QWidget, QVBoxLayout, QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+from matplotlib import cm
+from datetime import date
+import calendar
+from matplotlib.colors import LogNorm
+import matplotlib.dates
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import numpy as np
+from collections import defaultdict
 
 from mainwindow import Ui_MainWindow
 from managers import users_class_manager, customers_class_manager, contacts_class_manager, leads_class_manager, \
@@ -29,7 +36,7 @@ class PieChartCanvas(FigureCanvas):
         self.axes.set_title('Users Types')
         self.draw()
 class ColumnChartCanvas(FigureCanvas):
-    def __init__(self, parent=None, width=1, height=1, dpi=100):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(ColumnChartCanvas, self).__init__(fig)
@@ -42,6 +49,7 @@ class ColumnChartCanvas(FigureCanvas):
         self.axes.bar(product_names, revenues)
         self.axes.set_ylabel('Revenue')
         self.axes.set_title('Top Selling Products and Revenue')
+        self.axes.yaxis.grid(True, linestyle='--', alpha=0.7)
         self.draw()
 
 class BarChartCustomers(FigureCanvas):
@@ -60,6 +68,7 @@ class BarChartCustomers(FigureCanvas):
         self.axes.set_ylabel('Revenue')
         self.axes.set_title('Top Customers and Revenue')
         self.adjust_layout()
+        self.axes.yaxis.grid(True, linestyle='--', alpha=0.7)
         self.draw()
 
     def adjust_layout(self):
@@ -71,6 +80,104 @@ class BarChartCustomers(FigureCanvas):
             height = bar.get_height()
             self.axes.text(bar.get_x() + bar.get_width() / 2, height / 2, label,
                            ha='center', va='center', rotation='vertical')
+
+class YearlyRevenueChartCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(YearlyRevenueChartCanvas, self).__init__(fig)
+        self.setParent(parent)
+
+    def plot_data(self, yearly_revenue):
+        years = [str(item[0]) for item in yearly_revenue]
+        revenues = [item[1] for item in yearly_revenue]
+
+        self.axes.plot(years, revenues, marker='o', linestyle='-')
+        self.axes.set_xlabel('Year')
+        self.axes.set_ylabel('Total Revenue')
+        self.axes.set_title('Yearly Revenue Summary')
+        self.axes.yaxis.grid(True, linestyle='--', alpha=0.7)
+
+        # Set ticks and labels, then rotate the x-axis labels vertically
+        self.axes.set_xticks(range(len(years)))
+        self.axes.set_xticklabels(years, rotation='vertical')
+
+        self.draw()
+
+class StackedBarChartCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(StackedBarChartCanvas, self).__init__(fig)
+        self.setParent(parent)
+
+
+    def plot_data(self, lead_data):
+        lead_statuses = lead_data['statuses']
+        lead_sources = lead_data['sources']
+
+        num_statuses = len(lead_statuses)
+        num_sources = len(lead_sources)
+
+        # Create a matrix to store data for each combination of status and source
+        data_matrix = np.zeros((num_statuses, num_sources), dtype=int)
+
+        # Populate the matrix with the counts for each combination
+        for i, status in enumerate(lead_statuses):
+            for j, source in enumerate(lead_sources):
+                count = lead_data['data'][(status, source)]
+                data_matrix[i, j] = count
+
+        # Plot the stacked bar chart
+        bars = self.axes.bar(range(num_statuses), data_matrix[:, 0], label=lead_sources[0])
+
+        for i in range(1, num_sources):
+            bars = self.axes.bar(range(num_statuses), data_matrix[:, i],
+                                 bottom=np.sum(data_matrix[:, :i], axis=1),
+                                 label=lead_sources[i])
+
+        self.axes.set_xlabel('Lead Status')
+        self.axes.set_ylabel('Count')
+        self.axes.set_title('Lead Status vs. Lead Source')
+        self.axes.set_xticks(range(num_statuses))
+        self.axes.set_xticklabels(lead_statuses)
+        self.axes.legend()
+        self.axes.yaxis.grid(True, linestyle='--', alpha=0.7)
+        self.draw()
+
+class HeatmapChartCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(HeatmapChartCanvas, self).__init__(fig)
+        self.setParent(parent)
+
+    def plot_data(self, monthly_revenue):
+        # Extract years and months from the data
+        years = sorted(list(monthly_revenue.keys()))
+        # Manually create a list of full month names
+        month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        months = sorted(list(monthly_revenue[years[0]].keys()), key=lambda x: month_order.index(x))
+
+        # Create a matrix to store data for each month
+        revenue_matrix = [[monthly_revenue[year][month] for year in years] for month in months]
+
+        cmap = cm.get_cmap('Blues')
+        im = self.axes.imshow(revenue_matrix, cmap=cmap, vmin=0, vmax=np.max(revenue_matrix))
+
+        # Set ticks and labels for both axes
+        self.axes.set_xticks(range(len(years)))
+        self.axes.set_xticklabels(years, rotation='vertical')
+
+        self.axes.set_yticks(range(len(months)))
+        self.axes.set_yticklabels(months, rotation='horizontal')
+
+        self.axes.set_xlabel('Year')
+        self.axes.set_ylabel('Month')
+        self.axes.set_title('Monthly Revenue Heatmap')
+
+        self.figure.colorbar(im)
+        self.draw()
 
 
 class MainWindow(QMainWindow):
@@ -92,6 +199,16 @@ class MainWindow(QMainWindow):
         self.chart1_layout = QVBoxLayout(self.ui.chart1_widget)
         self.chart2_layout = QVBoxLayout(self.ui.chart2_widget)
         self.chart3_layout = QVBoxLayout(self.ui.chart3_widget)
+        self.chart4_layout = QVBoxLayout(self.ui.chart4_widget)
+        self.chart5_layout = QVBoxLayout(self.ui.chart5_widget)
+        self.chart6_layout = QVBoxLayout(self.ui.chart6_widget)
+
+        self.ui.chart1_widget.setFixedSize(550, 450)
+        self.ui.chart2_widget.setFixedSize(550, 450)
+        self.ui.chart3_widget.setFixedSize(550, 450)
+        self.ui.chart4_widget.setFixedSize(680, 580)
+        self.ui.chart5_widget.setFixedSize(680, 580)
+        self.ui.chart6_widget.setFixedSize(680, 590)
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
@@ -192,6 +309,7 @@ class MainWindow(QMainWindow):
     def on_home_btn2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 
+
     def on_dashboard_btn1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(2)
         try:
@@ -245,6 +363,58 @@ class MainWindow(QMainWindow):
 
             # Plot data on the bar chart
             bar_chart_customers.plot_data(top_customers)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+        try:
+            # Fetch yearly revenue data
+            yearly_revenue = self.orders_table_wiget.calculate_yearly_revenue()
+
+            # Clear the layout of chart4_widget
+            self.clear_layout(self.ui.chart4_widget.layout())
+
+            # Create a new chart canvas for yearly revenue and add it to chart4_widget
+            chart_widget = QWidget(self.ui.chart4_widget)
+            yearly_revenue_canvas = YearlyRevenueChartCanvas(chart_widget, width=8, height=6, dpi=100)
+            self.ui.chart4_widget.layout().addWidget(yearly_revenue_canvas)
+
+            # Plot data on the yearly revenue chart
+            yearly_revenue_canvas.plot_data(yearly_revenue)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+        try:
+            # Calculate lead data for stacked bar chart
+            lead_data = self.leads_table_widget.calculate_lead_status_source_data()
+
+            # Clear the layout of chart5_widget
+            self.clear_layout(self.ui.chart5_widget.layout())
+
+            # Create the stacked bar chart canvas and add it to chart5_widget
+            chart_widget = QWidget(self.ui.chart5_widget)
+            stacked_bar_chart_canvas = StackedBarChartCanvas(chart_widget, width=8, height=6, dpi=100)
+            self.ui.chart5_widget.layout().addWidget(stacked_bar_chart_canvas)
+
+            # Plot data on the stacked bar chart
+            stacked_bar_chart_canvas.plot_data(lead_data)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+        try:
+            # Fetch monthly revenue data
+            monthly_revenue = self.orders_table_wiget.calculate_monthly_revenue()
+
+            # Clear the layout of chart6_widget
+            self.clear_layout(self.ui.chart6_widget.layout())
+
+            # Create a new heatmap canvas for monthly revenue and add it to chart6_widget
+            chart_widget = QWidget(self.ui.chart6_widget)
+            heatmap_canvas = HeatmapChartCanvas(chart_widget, width=8, height=6, dpi=100)
+            self.ui.chart6_widget.layout().addWidget(heatmap_canvas)
+
+            # Plot data on the heatmap
+            heatmap_canvas.plot_data(monthly_revenue)
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
