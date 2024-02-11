@@ -214,7 +214,7 @@ class MainWindow(QMainWindow):
         self.ui.home_btn2.setChecked(True)
 
         self.adjust_to_screen_size()
-        self.showFullScreen()
+       # self.showFullScreen()
         #self.showMaximized()
         self.users_table_widget = users_class_manager.User_Manager(
             self.ui.users_tableWidget,

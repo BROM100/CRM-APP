@@ -179,7 +179,11 @@
               </font>
              </property>
              <property name="text">
-              <string>CRM APP</string>
+              <string>Aplikacja CRM z elementami analizy danych
+
+Bartłomiej Antos
+Kraków, 2024
+</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>

@@ -1,8 +1,9 @@
-from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView, QHeaderView
+from PyQt6.QtWidgets import QPushButton, QTableWidgetItem, QTableWidget,QMessageBox, QLineEdit, QDialog, QVBoxLayout, QLabel, QWidget, QAbstractItemView, QHeaderView, QInputDialog
 from PyQt6.QtCore import Qt, QSortFilterProxyModel,QItemSelectionModel, QItemSelection
 from PyQt6.QtGui import QIcon
 # from sqlalchemy.ext.declarative import declarative_base
 import models.users
+
 
 
 class UserAddDialog(QDialog):
@@ -64,9 +65,16 @@ class User_Manager(QTableWidget):
         #Column Sorting feature to QtableWidget
         self.users_table_widget.setSortingEnabled(True)
         self.users_table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+        self.users_table_widget.itemDoubleClicked.connect(
+
+            self.setupDoubleClickEditing
+
+        )
     def clear_selection(self):
         # Clear the selection in the QTableWidget
         self.users_table_widget.selectionModel().clearSelection()
+
 
     def count_standard_users(self):
         return len([1 for row in range(self.users_table_widget.rowCount())
@@ -201,4 +209,39 @@ class User_Manager(QTableWidget):
         self.users_table_widget.verticalHeader().setDefaultSectionSize(50)
         self.users_table_widget.verticalHeader().setMinimumSectionSize(50)
 
+    def editType(self, item):
+        # Get the current value in the cell
+        current_value = item.text()
+        print(current_value)
 
+        # Create a list of options for the picklist
+        options = ['admin', 'standard']
+
+        # Show a popup with a picklist for the user to choose a new value
+        new_value, ok = QInputDialog.getItem(
+            self,
+            "Edit Type",
+            "Choose a new type:",
+            options,
+            current=0,  # Set the default option to the current value
+            editable=False  # Make the picklist read-only
+        )
+
+        # If the user selected a new value, update the cell
+        if ok and new_value and new_value != current_value:
+            item.setText(new_value)
+            row = item.row()
+            user_id = int(self.users_table_widget.item(row, 0).text())
+            self.updateDatabaseStatus(user_id, new_value)
+
+    def setupDoubleClickEditing(self, item):
+
+        if item.column() == 6:
+            print("test")
+            self.editType(item)
+
+
+    def updateDatabaseStatus(self,user_id,value):
+        user = self.database_session.query(models.users.Users).filter_by(ID=user_id).first()
+        user.Type = value
+        self.database_session.commit()

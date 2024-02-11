@@ -1,11 +1,36 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QTableWidgetItem, QTableWidget, QMessageBox, QAbstractItemView, QHeaderView, QLabel, \
-    QLineEdit, QPushButton, QVBoxLayout, QDialog
+    QLineEdit, QPushButton, QVBoxLayout, QDialog, QRadioButton
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import text
 
 import models.contacts
 
+
+class EditDoNotCallDialog(QDialog):
+    def __init__(self, current_value):
+        super().__init__()
+        self.setWindowTitle("Edit Do Not Call")
+        self.setMinimumWidth(200)  # Set minimum width to avoid very small size
+
+        self.radio_yes = QRadioButton("Yes")
+        self.radio_no = QRadioButton("No")
+        self.radio_yes.setChecked(current_value == "Yes")
+        self.radio_no.setChecked(current_value == "No")
+
+        self.save_button = QPushButton("Save")
+        self.cancel_button = QPushButton("Cancel")
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.radio_yes)
+        self.layout.addWidget(self.radio_no)
+        self.layout.addWidget(self.save_button)
+        self.layout.addWidget(self.cancel_button)
+
+        self.setLayout(self.layout)
+
+        self.save_button.clicked.connect(self.accept)
+        self.cancel_button.clicked.connect(self.reject)
 
 class UserAddDialog(QDialog):
     def __init__(self):
@@ -67,6 +92,11 @@ class Contacts_Manager(QTableWidget):
         # Column Sorting feature to QtableWidget
         self.contacts_table_widget.setSortingEnabled(True)
         self.contacts_table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.contacts_table_widget.itemDoubleClicked.connect(self.handle_double_click)
+
+    def handle_double_click(self, item):
+        if item.column() == 6:
+            self.edit_do_not_call(item.row(), item.column())
     def clear_selection(self):
         # Clear the selection in the QTableWidget
         self.contacts_table_widget.selectionModel().clearSelection()
@@ -86,7 +116,12 @@ class Contacts_Manager(QTableWidget):
                 if col == 0: #Column: "ID"
                     item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.contacts_table_widget.setItem(index, col, item)
+            do_not_call_text = "Yes" if contact.Do_not_call else "No"
+            do_not_call_item = QTableWidgetItem(do_not_call_text)
+            self.contacts_table_widget.setItem(index, 6, do_not_call_item)
+
             index += 1
+
 
         # Set the vertical header to show checkboxes
         self.contacts_table_widget.verticalHeader().setSectionsClickable(True)
@@ -215,3 +250,24 @@ class Contacts_Manager(QTableWidget):
             new_contact_id = 1
 
         return new_contact_id
+
+    def edit_do_not_call(self, row, column):
+        # Get the current value from the table
+        current_value = self.contacts_table_widget.item(row, column).text()
+
+        # Show the dialog for editing "Do Not Call"
+        dialog = EditDoNotCallDialog(current_value)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+
+
+            new_value = "Yes" if dialog.radio_yes.isChecked() else "No"
+
+
+            self.contacts_table_widget.item(row, column).setText(new_value)
+
+
+            contact_id = int(self.contacts_table_widget.item(row, 0).text())
+            contact = self.database_session.query(models.contacts.Contacts).filter_by(ID=contact_id).first()
+            if contact:
+                contact.Do_not_call = 1 if new_value == "Yes" else 0
+                self.database_session.commit()

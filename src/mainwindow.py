@@ -660,7 +660,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label_7.setText(_translate("MainWindow", "CRM APP"))
+        self.label_7.setText(_translate("MainWindow", "Aplikacja CRM z elementami analizy danych\n"
+"\n"
+"Bartłomiej Antos\n"
+"Kraków, 2024\n"
+""))
         item = self.users_tableWidget.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "ID"))
         item = self.users_tableWidget.horizontalHeaderItem(1)

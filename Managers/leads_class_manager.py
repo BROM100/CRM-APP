@@ -248,12 +248,40 @@ class Leads_Manager(QTableWidget):
             row = item.row()
             lead_id = int(self.leads_table_widget.item(row, 0).text())
             self.updateDatabaseStatus(source, lead_id, new_value)
+
+    def editSector(self, item):
+        # Get the current value in the cell
+        current_value = item.text()
+
+        # Create a list of options for the picklist
+        options = ['Energy', 'Materials', 'Real Estate', 'Industrials', 'Utilities', 'Telecom', 'Consumer Discretionary', 'Financials', 'Technology', 'Consumer Staples', 'Healthcare'
+                   ]
+
+        # Show a popup with a picklist for the lead to choose a new value
+        new_value, ok = QInputDialog.getItem(
+            self,
+            "Edit Sector",
+            "Choose a new sector:",
+            options,
+            current=0,  # Set the default option to the current value
+            editable=False  # Make the picklist read-only
+        )
+
+        # If the lead selected a new value, update the cell
+        if ok and new_value and new_value != current_value:
+            sector = 'sector'
+            item.setText(new_value)
+            row = item.row()
+            lead_id = int(self.leads_table_widget.item(row, 0).text())
+            self.updateDatabaseStatus(sector, lead_id, new_value)
     def setupDoubleClickEditing(self, item):
 
         if item.column() == 6:
             self.editStatus(item)
         elif item.column() == 5:
             self.editSource(item)
+        elif item.column()==3:
+            self.editSector(item)
     def updateDatabaseStatus(self, field, lead_id, value):
         lead = self.database_session.query(models.leads.Leads).filter_by(ID=lead_id).first()
         if field == 'status':
@@ -262,7 +290,9 @@ class Leads_Manager(QTableWidget):
         elif field == 'source':
             lead.Source = value
             self.database_session.commit()
-
+        elif field == 'sector':
+            lead.StockSector = value
+            self.database_session.commit()
     def calculate_lead_status_source_data(self):
         lead_statuses = ['New', 'On hold', 'In progress', 'Closed']
         lead_sources = ['Events', 'Social media', 'Direct traffic', 'Paid ads', 'Email marketing']
