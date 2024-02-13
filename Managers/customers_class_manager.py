@@ -1,11 +1,12 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QPushButton, QTableWidgetItem, QTableWidget, QMessageBox, QLineEdit, QDialog, QVBoxLayout,
                              QLabel, QAbstractItemView, QHeaderView, QComboBox, QDialogButtonBox, QFormLayout,
-                             QCheckBox)
+                             QCheckBox, QInputDialog)
 
 import models.customers
 from models.orders import Orders
 from models.customers import Customers
+from models.leads import Leads
 
 
 class CreateCustomerDialog(QDialog):
@@ -104,6 +105,7 @@ class Customer_Manager(QTableWidget):
             self.show_contact_details
 
         )
+
 
     def clear_selection(self):
         # Clear the selection in the QTableWidget
@@ -228,6 +230,7 @@ class Customer_Manager(QTableWidget):
 
     def show_contact_details(self, item):
         if item.column() == 5:  # "Contact" column
+            print("test")
             row = item.row()
             customer_id_item = self.customers_table_widget.item(row, 0)
             if customer_id_item is not None:
@@ -276,14 +279,86 @@ class Customer_Manager(QTableWidget):
 
             except Exception as e:
                 print(f"Error querying customer: {e}")
+        elif item.column() ==7:
+            row = item.row()
+            customer_id_item = self.customers_table_widget.item(row, 0)
+            if customer_id_item is None:
+                print("Failed to retrieve customer ID item")
+                return
 
+            customer_id_str = customer_id_item.text()
+            customer = self.database_session.query(models.customers.Customers) \
+                .filter(models.customers.Customers.ID == customer_id_str) \
+                .first()
+
+            if customer is None:
+                print(f"No customer found with ID: {customer_id_str}")
+                return
+
+            lead_item = self.customers_table_widget.item(row, 7)  # Lead column item
+            if lead_item is None or lead_item.text() == "":  # No lead populated, choose existing lead
+                self.choose_existing_lead(item)
+            else:  # Lead populated, edit existing lead
+                lead = customer.lead
+                if lead:
+                    dialog = EditLeadDialog(parent=self, lead=lead)
+                    result = dialog.exec()
+                    if result == QDialog.DialogCode.Accepted:
+                        # Lead edited, commit changes
+                        self.database_session.commit()
+                        # Reload data after editing lead
+                        self.load_data()
+                else:
+                    print("No lead associated with the customer.")
+        else:
+            return
         # Reload data after showing contact details
         self.load_data()
+
+    def choose_existing_lead(self, item):
+        try:
+            if item.column() != 7:  # Leads column index
+                return
+
+            row = item.row()
+            customer_id_item = self.customers_table_widget.item(row, 0)
+            if customer_id_item is None:
+                print("Failed to retrieve customer ID item")
+                return
+
+            customer_id_str = customer_id_item.text()
+            customer = self.database_session.query(models.customers.Customers) \
+                .filter(models.customers.Customers.ID == customer_id_str) \
+                .first()
+
+            if customer is None:
+                print(f"No customer found with ID: {customer_id_str}")
+                return
+
+            existing_leads = self.database_session.query(Leads).all()
+            dialog = ChooseLeadDialog(parent=self, leads=existing_leads)  # Pass existing leads to the dialog
+            selected_lead = dialog.exec()
+
+            if selected_lead == QDialog.DialogCode.Accepted:
+                lead = dialog.lead
+                if lead:
+                    customer.lead = lead
+                    self.database_session.commit()
+                    self.load_data()  # Reload data after selecting lead
+                else:
+                    QMessageBox.warning(self, "No Lead Selected", "No lead selected.")
+            else:
+                print("Lead selection canceled.")
+        except Exception as e:
+            print(f"Error selecting lead: {e}")
+
+
 class EditContactDialog(QDialog):
     def __init__(self, parent=None, contact=None):
         super(EditContactDialog, self).__init__(parent)
 
         self.contact = contact
+        print(contact)
 
         layout = QVBoxLayout()
 
@@ -331,7 +406,7 @@ class EditContactDialog(QDialog):
             self.email_edit.setText(contact.Email)
             self.phone_edit.setText(contact.Phone)
             self.gender_combo.setCurrentText(contact.Gender)
-            self.do_not_call_checkbox.setChecked(contact.Do_not_call)
+            self.do_not_call_checkbox.setChecked(bool(contact.Do_not_call))
     def delete_contact(self):
         # If there is no contact associated, close the dialog
         if not self.contact or not self.parent().customer:
@@ -402,7 +477,117 @@ class EditContactDialog(QDialog):
         super(EditContactDialog, self).accept()
 
 
+class EditLeadDialog(QDialog):
+    def __init__(self, parent=None, lead=None):
+        super(EditLeadDialog, self).__init__(parent)
 
+        self.lead = lead
+
+        layout = QVBoxLayout()
+
+        self.name_edit = QLineEdit()
+        self.email_edit = QLineEdit()
+
+        # Add picklist field for stock sector
+        self.stock_sector_combo = QComboBox()
+        self.stock_sector_combo.addItems(['Energy', 'Materials', 'Real Estate', 'Industrials', 'Utilities', 'Telecom',
+                                          'Consumer Discretionary', 'Financials', 'Technology', 'Consumer Staples',
+                                          'Healthcare'])
+
+        self.phone_edit = QLineEdit()
+
+        # Add picklist fields for source and status
+        self.source_combo = QComboBox()
+        self.source_combo.addItems(['Events', 'Social media', 'Direct traffic', 'Paid ads', 'Email marketing'])
+
+        self.status_combo = QComboBox()
+        self.status_combo.addItems(['New', 'On hold', 'In progress', 'Closed'])
+
+        layout.addWidget(QLabel("Name:"))
+        layout.addWidget(self.name_edit)
+        layout.addWidget(QLabel("Email:"))
+        layout.addWidget(self.email_edit)
+
+        # Add picklist field for stock sector
+        layout.addWidget(QLabel("Stock Sector:"))
+        layout.addWidget(self.stock_sector_combo)
+
+        layout.addWidget(QLabel("Phone:"))
+        layout.addWidget(self.phone_edit)
+
+        # Add picklist fields
+        layout.addWidget(QLabel("Source:"))
+        layout.addWidget(self.source_combo)
+        layout.addWidget(QLabel("Status:"))
+        layout.addWidget(self.status_combo)
+
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+
+        layout.addWidget(button_box)
+
+        self.setLayout(layout)
+        self.setWindowTitle("Edit Lead Details")
+
+        if lead:
+            self.name_edit.setText(lead.Name)
+            self.email_edit.setText(lead.Email)
+
+            # Set the current value for stock sector
+            self.stock_sector_combo.setCurrentText(lead.StockSector)
+
+            self.phone_edit.setText(lead.Phone)
+            self.source_combo.setCurrentText(lead.Source)
+            self.status_combo.setCurrentText(lead.Status)
+
+    def accept(self):
+        # Save the edited lead details
+        if self.lead:
+            self.lead.Name = self.name_edit.text()
+            self.lead.Email = self.email_edit.text()
+
+            # Get the current value for stock sector
+            self.lead.StockSector = self.stock_sector_combo.currentText()
+
+            self.lead.Phone = self.phone_edit.text()
+            self.lead.Source = self.source_combo.currentText()
+            self.lead.Status = self.status_combo.currentText()
+
+        # Reload data after editing the lead
+        self.parent().load_data()
+
+        super(EditLeadDialog, self).accept()
+class ChooseLeadDialog(QDialog):
+    def __init__(self, parent=None, leads=None):
+        super(ChooseLeadDialog, self).__init__(parent)
+
+        self.leads = leads
+
+        layout = QFormLayout()
+
+        self.lead_combo = QComboBox()
+        layout.addRow("Choose Lead:", self.lead_combo)
+
+        for lead in leads:
+            lead_text = f"{lead.Name} (ID: {lead.ID})"
+            self.lead_combo.addItem(lead_text, lead.ID)
+
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+
+        layout.addWidget(button_box)
+
+        self.setLayout(layout)
+        self.setWindowTitle("Choose Existing Lead")
+
+    def get_selected_lead(self):
+        index = self.lead_combo.currentIndex()
+        if index != -1:
+            return self.leads[index]
+        else:
+            return None
 class ChooseContactDialog(QDialog):
     def __init__(self, parent=None, contacts=None):
         super(ChooseContactDialog, self).__init__(parent)

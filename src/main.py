@@ -41,6 +41,7 @@ class ColumnChartCanvas(FigureCanvas):
         self.axes = fig.add_subplot(111)
         super(ColumnChartCanvas, self).__init__(fig)
         self.setParent(parent)
+        self.figure.subplots_adjust(left=0.2)
 
     def plot_data(self, top_products):
         product_names = [str(product[0]) for product in top_products]
@@ -58,6 +59,7 @@ class BarChartCustomers(FigureCanvas):
         self.axes = fig.add_subplot(111)
         super(BarChartCustomers, self).__init__(fig)
         self.setParent(parent)
+        self.figure.subplots_adjust(left=0.2)
 
     def plot_data(self, top_customers, common_color='green'):
         customer_names = [str(customer[0]) for customer in top_customers]
@@ -87,6 +89,7 @@ class YearlyRevenueChartCanvas(FigureCanvas):
         self.axes = fig.add_subplot(111)
         super(YearlyRevenueChartCanvas, self).__init__(fig)
         self.setParent(parent)
+        self.figure.subplots_adjust(left=0.2, right=0.95, top=0.9, bottom=0.2)
 
     def plot_data(self, yearly_revenue):
         years = [str(item[0]) for item in yearly_revenue]
@@ -105,11 +108,12 @@ class YearlyRevenueChartCanvas(FigureCanvas):
         self.draw()
 
 class StackedBarChartCanvas(FigureCanvas):
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, parent=None, width=4, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(StackedBarChartCanvas, self).__init__(fig)
         self.setParent(parent)
+        self.figure.subplots_adjust(bottom=0.2)
 
 
     def plot_data(self, lead_data):
@@ -151,12 +155,13 @@ class HeatmapChartCanvas(FigureCanvas):
         self.axes = fig.add_subplot(111)
         super(HeatmapChartCanvas, self).__init__(fig)
         self.setParent(parent)
+        self.figure.subplots_adjust(left= 0.2)
 
     def plot_data(self, monthly_revenue):
-        # Extract years and months from the data
+
         years = sorted(list(monthly_revenue.keys()))
-        # Manually create a list of full month names
-        month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        month_order = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December']
         months = sorted(list(monthly_revenue[years[0]].keys()), key=lambda x: month_order.index(x))
 
         # Create a matrix to store data for each month
@@ -165,7 +170,6 @@ class HeatmapChartCanvas(FigureCanvas):
         cmap = cm.get_cmap('Blues')
         im = self.axes.imshow(revenue_matrix, cmap=cmap, vmin=0, vmax=np.max(revenue_matrix))
 
-        # Set ticks and labels for both axes
         self.axes.set_xticks(range(len(years)))
         self.axes.set_xticklabels(years, rotation='vertical')
 
@@ -186,6 +190,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
 
+
         # Connect to SQLite database
         self.engine = create_engine(f"sqlite:///database/crm.db")
         Session = sessionmaker()
@@ -196,6 +201,7 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowTitle("CRM")
         self.chart1_layout = QVBoxLayout(self.ui.chart1_widget)
         self.chart2_layout = QVBoxLayout(self.ui.chart2_widget)
         self.chart3_layout = QVBoxLayout(self.ui.chart3_widget)
@@ -203,18 +209,19 @@ class MainWindow(QMainWindow):
         self.chart5_layout = QVBoxLayout(self.ui.chart5_widget)
         self.chart6_layout = QVBoxLayout(self.ui.chart6_widget)
 
-        self.ui.chart1_widget.setFixedSize(550, 450)
-        self.ui.chart2_widget.setFixedSize(550, 450)
-        self.ui.chart3_widget.setFixedSize(550, 450)
-        self.ui.chart4_widget.setFixedSize(680, 580)
-        self.ui.chart5_widget.setFixedSize(680, 580)
-        self.ui.chart6_widget.setFixedSize(680, 590)
+        # self.ui.chart1_widget.setFixedSize(500, 450)
+        # self.ui.chart2_widget.setFixedSize(550, 450)
+        # self.ui.chart3_widget.setFixedSize(550, 450)
+        # self.ui.chart4_widget.setFixedSize(680, 580)
+        # self.ui.chart5_widget.setFixedSize(680, 580)
+        # self.ui.chart6_widget.setFixedSize(680, 590)
+
         self.ui.Icon_onlywidget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn2.setChecked(True)
 
         self.adjust_to_screen_size()
-       # self.showFullScreen()
+        #self.showFullScreen()
         #self.showMaximized()
         self.users_table_widget = users_class_manager.User_Manager(
             self.ui.users_tableWidget,
@@ -256,8 +263,10 @@ class MainWindow(QMainWindow):
         super().mousePressEvent(event)
     def adjust_to_screen_size(self):
         screen = QApplication.primaryScreen()
-        screen_rect = screen.geometry()
-        self.resize(screen_rect.width(), screen_rect.height())
+        screen_rect = screen.availableGeometry()  # Use availableGeometry() instead of geometry() to exclude taskbars
+        taskbar_height = screen.geometry().height() - screen_rect.height()  # Calculate taskbar height
+        self.resize(screen_rect.width(), screen_rect.height() - taskbar_height)
+
 
     ###Buttons actions###
     def on_search_input_changed(self, text):

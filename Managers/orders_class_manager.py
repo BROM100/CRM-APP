@@ -22,13 +22,7 @@ class Orders_Manager(QTableWidget):
         self.orders_table_widget.setSortingEnabled(True)
         self.orders_table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
-    def calculate_total_price(self, order, product_price):
-        amount = order.Amount
-        discount_percentage = order.Discount / 100  # Assuming Discount is already a percentage
-        discount_amount = amount * discount_percentage
 
-        total_price = amount * product_price - discount_amount
-        return total_price
     def load_data(self):
         self.orders_table_widget.setRowCount(0)
         orders = self.database_session.query(models.orders.Orders).all()
@@ -95,7 +89,13 @@ class Orders_Manager(QTableWidget):
         yearly_revenue_list.sort(key=lambda x: x[0])
 
         return yearly_revenue_list
+    def calculate_total_price(self, order, product_price):
+        amount = order.Amount
+        discount_percentage = order.Discount / 100
+        discount_amount = amount * discount_percentage
 
+        total_price = amount * product_price - discount_amount
+        return total_price
     def calculate_monthly_revenue(self):
         orders = self.database_session.query(models.orders.Orders).all()
 

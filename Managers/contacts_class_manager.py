@@ -1,6 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QTableWidgetItem, QTableWidget, QMessageBox, QAbstractItemView, QHeaderView, QLabel, \
-    QLineEdit, QPushButton, QVBoxLayout, QDialog, QRadioButton
+    QLineEdit, QPushButton, QVBoxLayout, QDialog, QRadioButton, QComboBox, QButtonGroup
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import text
 
@@ -35,7 +35,7 @@ class EditDoNotCallDialog(QDialog):
 class UserAddDialog(QDialog):
     def __init__(self):
         super(UserAddDialog, self).__init__()
-
+        self.setWindowTitle("Create contact")
 
         self.first_name_label = QLabel("First Name")
         self.first_name_edit = QLineEdit()
@@ -50,10 +50,15 @@ class UserAddDialog(QDialog):
         self.phone_edit = QLineEdit()
 
         self.gender_label = QLabel("Gender")
-        self.gender_edit = QLineEdit()
+        self.gender_combobox = QComboBox()
+        self.gender_combobox.addItems(["Male", "Female"])
 
         self.do_not_call_label = QLabel("Do Not Call")
-        self.do_not_call_edit = QLineEdit()
+        self.do_not_call_yes = QRadioButton("Yes")
+        self.do_not_call_no = QRadioButton("No")
+        self.do_not_call_group = QButtonGroup()
+        self.do_not_call_group.addButton(self.do_not_call_yes)
+        self.do_not_call_group.addButton(self.do_not_call_no)
 
         self.save_button = QPushButton("Save")
         self.cancel_button = QPushButton("Cancel")
@@ -69,12 +74,12 @@ class UserAddDialog(QDialog):
         self.layout.addWidget(self.phone_label)
         self.layout.addWidget(self.phone_edit)
         self.layout.addWidget(self.gender_label)
-        self.layout.addWidget(self.gender_edit)
+        self.layout.addWidget(self.gender_combobox)
         self.layout.addWidget(self.do_not_call_label)
-        self.layout.addWidget(self.do_not_call_edit)
+        self.layout.addWidget(self.do_not_call_yes)
+        self.layout.addWidget(self.do_not_call_no)
         self.layout.addWidget(self.save_button)
         self.layout.addWidget(self.cancel_button)
-
 
         self.save_button.clicked.connect(self.accept)
         self.cancel_button.clicked.connect(self.reject)
@@ -209,16 +214,12 @@ class Contacts_Manager(QTableWidget):
 
         if result == QDialog.DialogCode.Accepted:
             # If the contact clicked OK, retrieve the entered data
-            
             firstname = dialog.first_name_edit.text()
             lastname = dialog.last_name_edit.text()
             email = dialog.email_edit.text()
             phone = dialog.phone_edit.text()
-            gender = dialog.gender_edit.text()
-            do_not_call = dialog.do_not_call_edit.text()
-            
-            
-
+            gender = dialog.gender_combobox.currentText()  # Retrieve selected gender from QComboBox
+            do_not_call = "Yes" if dialog.do_not_call_group.checkedButton() == dialog.do_not_call_yes else "No"  # Retrieve selection from QButtonGroup
 
             new_contact_id = self.generate_new_contact_id()
 
@@ -234,8 +235,10 @@ class Contacts_Manager(QTableWidget):
             self.contacts_table_widget.setItem(row_position, 4, QTableWidgetItem(phone))
             self.contacts_table_widget.setItem(row_position, 5, QTableWidgetItem(gender))
             self.contacts_table_widget.setItem(row_position, 6, QTableWidgetItem(do_not_call))
+
             # Update the database with the new contact
-            new_contact = models.contacts.Contacts(ID=new_contact_id, First_name=firstname, Last_name=lastname, Email=email, Phone=phone, Gender=gender, Do_not_call=do_not_call )
+            new_contact = models.contacts.Contacts(ID=new_contact_id, First_name=firstname, Last_name=lastname,
+                                                   Email=email, Phone=phone, Gender=gender, Do_not_call=do_not_call)
             self.database_session.add(new_contact)
             self.database_session.commit()
 
